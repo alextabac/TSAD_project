@@ -72,18 +72,21 @@ class MASS_V4:
             print(f"Found nan values in y_pad: {sum(np.isnan(y_pad))} out of {len(y_pad)}")
         print(f"len(x_pad)={len(x_pad)} ; len(y_pad)={len(y_pad)} ; si={si}")
         N = len(x_pad)
-        xc = dct(x_pad, type=2)
-        yc = dct(y_pad, type=2)
+        xc = dct(x_pad, type=2, norm="ortho", orthogonalize=False)
+        yc = dct(y_pad, type=2, norm="ortho", orthogonalize=False)
         if sum(np.isnan(xc)) > 0:
             print(f"Found nan values in xc: {sum(np.isnan(xc))} out of {len(xc)}")
         if sum(np.isnan(yc)) > 0:
             print(f"Found nan values in y_pad: {sum(np.isnan(yc))} out of {len(yc)}")
         dct_product = np.multiply(xc, yc)
+        print(f";len(dct_product)={len(dct_product)}; max={np.max(dct_product)}")
+        print(dct_product)
         # print(f"len(xc)={len(xc)} ; len(yc)={len(yc)} ; len(dct_product)={len(dct_product)} ; N={N}")
         dct_product.resize(N + 1)
         dct_product[N] = 0
         dct_product[0] *= sqrt(2)
-        dot_p = dct(dct_product, type=1)
+        dot_p = dct(dct_product, type=1, norm="ortho", orthogonalize=False)
+        print(f";len(dot_p)={len(dot_p)}; max={np.max(dot_p)}")
         if sum(np.isnan(dot_p)) > 0:
             print(f"Found nan values in dot_p: {sum(np.isnan(dot_p))} out of {len(dot_p)}")
         # print(f"len(dot_p)={len(dot_p)}")
