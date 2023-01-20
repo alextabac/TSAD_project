@@ -50,7 +50,7 @@ class MASS_V4:
         yc = dct(y_pad, type=2)
         dct_product = np.multiply(xc, yc)
         dct_product.resize(N + 1)
-        dct_product[N + 1] = 0
+        dct_product[N] = 0
         dct_product[0] *= sqrt(2)
         dot_p = dct(dct_product, type=1)
         dot_p[0] *= 2
@@ -68,5 +68,5 @@ class MASS_V4:
         y_pad = np.zeros(m + p2 + p4)
         y_pad[p2: p2 + m] = y
         start_index = p1 - p2
-        print(f"p1={p1} ; p2={p2} ; p4={p4}")
+        # print(f"p1={p1} ; p2={p2} ; p4={p4}")
         return x_pad, y_pad, start_index
