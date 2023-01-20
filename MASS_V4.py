@@ -66,6 +66,6 @@ class MASS_V4:
         x_pad = np.zeros(p1 + n)
         x_pad[p1:] = x
         y_pad = np.zeros(m + p2 + p4)
-        y_pad[p2: p2 + m + 1] = y
+        y_pad[p2: p2 + m] = y
         start_index = p1 - p2
         return x_pad, y_pad, start_index
