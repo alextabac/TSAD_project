@@ -30,7 +30,7 @@ class MASS_V4:
         return np.std(aw, axis=-1)
 
     def get_batch_size(self, k, m):
-        b = floor((2.0 * k - 2.0) / 3.0) - 1.0
+        b = floor((2.0 * k - 2.0) / 3.0) - 1
         if b < m:
             b = m
         pad_len = b + floor((b - m + 1.0) / 2.0) + floor((m + 1.0) / 2.0)
@@ -38,8 +38,8 @@ class MASS_V4:
             b += 1
             pad_len = b + floor((b - m + 1.0) / 2.0) + floor((m + 1.0) / 2.0)
         if pad_len > k:
-            b -= 1.0
-        return b
+            b -= 1
+        return int(b)
 
     def dct_dot_product(self, x, y):
         n = len(x)
