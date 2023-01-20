@@ -62,7 +62,7 @@ class MASS_V4:
         m = len(y)
         p2 = floor((n - m + 1) / 2)
         p1 = p2 + floor((m + 1) / 2)
-        p4 = n - m + p1 + p2
+        p4 = n - m + p1 - p2
         x_pad = np.zeros(p1 + n)
         x_pad[p1:] = x
         y_pad = np.zeros(m + p2 + p4)
