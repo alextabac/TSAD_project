@@ -42,7 +42,7 @@ class MASS_V4:
             d = np.sqrt(2.0 * (m - np.divide(dot_p, sigmaT)))  # sigmaT[m:end] in Matlab
             if sum(np.isnan(d)) > 0:
                 print(f"Found nan values from np.div: {sum(np.isnan(d))} out of {len(d)}")
-            break
+                break
             dist = np.concatenate((dist, d))
         return dist
 
