@@ -31,6 +31,7 @@ class MASS_V4:
                 print(f"Found nan values from dct_dot_product: {sum(np.isnan(dot_p))} out of {len(dot_p)}")
             sigmaT = self.movstd(T[j:right], m)
             sigmaT[np.isnan(sigmaT)] = 1.0
+            sigmaT[sigmaT < 1.0] = 1.0
             if sum(np.isnan(sigmaT)) > 0:
                 print(f"Found nan values from movstd: {sum(np.isnan(sigmaT))} out of {len(sigmaT)}")
             ndiv = np.divide(dot_p, sigmaT)
