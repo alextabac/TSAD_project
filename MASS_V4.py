@@ -28,6 +28,8 @@ class MASS_V4:
                 right = n
             dot_p = self.dct_dot_product(T[j:right], Q)
             sigmaT = self.movstd(T[j:right], m)  # in Matlab they use w=1 such that normalized N and not N-1
+            if sum(np.isnan(sigmaT)):
+                print(f"Found NaN in movestd !!!! {sum(np.isnan(sigmaT))} out of {len(sigmaT)}")
             # sigmaT[np.isnan(sigmaT)] = 1.0
             d = np.sqrt(2.0 * (m - np.divide(dot_p, sigmaT)))  # sigmaT[m:end] in Matlab
             dist = np.concatenate((dist, d))
