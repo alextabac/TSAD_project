@@ -10,6 +10,13 @@ class MASS_V4:
         return stats.zscore(Q)
 
     def get_similarities(self, T, Q, k):
+        """
+        Euclidean distance metric.
+        :param T:
+        :param Q:
+        :param k: should greater than or equals to floor((3m+1)/2)
+        :return:
+        """
         n = len(T)
         m = len(Q)
         Q = zNorm(Q)
@@ -45,16 +52,19 @@ class MASS_V4:
         n = len(x)
         m = len(y)
         x_pad, y_pad, si = self.dct_padding(x, y)
+        print(f"x_pad={x_pad} ; y_pad={y_pad} ; si={si}")
         N = len(x_pad)
         xc = dct(x_pad, type=2)
         yc = dct(y_pad, type=2)
         dct_product = np.multiply(xc, yc)
+        print(f"len(xc)={len(xc)} ; len(yc)={len(yc)} ; len(dct_product)={len(dct_product)} ; N={N}")
         dct_product.resize(N + 1)
         dct_product[N] = 0
         dct_product[0] *= sqrt(2)
         dot_p = dct(dct_product, type=1)
+        print(f"len(dot_p)={len(dot_p)}")
         dot_p[0] *= 2
-        dot_p = sqrt(2 * N) * dot_p[si: si + n - m]
+        dot_p = sqrt(2 * N) * dot_p[si: si + n - m + 1]
         return dot_p
 
     def dct_padding(self, x, y):
@@ -63,10 +73,10 @@ class MASS_V4:
         p2 = floor((n - m + 1) / 2)
         p1 = p2 + floor((m + 1) / 2)
         p4 = n - m + p1 - p2
+        print(f"p1={p1} ; p2={p2} ; p4={p4}")
         x_pad = np.zeros(p1 + n)
         x_pad[p1:] = x
         y_pad = np.zeros(m + p2 + p4)
         y_pad[p2: p2 + m] = y
         start_index = p1 - p2
-        # print(f"p1={p1} ; p2={p2} ; p4={p4}")
         return x_pad, y_pad, start_index
