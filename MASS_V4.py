@@ -79,11 +79,14 @@ class MASS_V4:
         if sum(np.isnan(yc)) > 0:
             print(f"Found nan values in y_pad: {sum(np.isnan(yc))} out of {len(yc)}")
         dct_product = np.multiply(xc, yc)
+        print(f";len(dct_product)={len(dct_product)}; max={np.max(dct_product)}")
+        print(dct_product)
         # print(f"len(xc)={len(xc)} ; len(yc)={len(yc)} ; len(dct_product)={len(dct_product)} ; N={N}")
         dct_product.resize(N + 1)
         dct_product[N] = 0
         dct_product[0] *= sqrt(2)
         dot_p = dct(dct_product, type=1)
+        print(f";len(dot_p)={len(dot_p)}; max={np.max(dot_p)}")
         if sum(np.isnan(dot_p)) > 0:
             print(f"Found nan values in dot_p: {sum(np.isnan(dot_p))} out of {len(dot_p)}")
         # print(f"len(dot_p)={len(dot_p)}")
