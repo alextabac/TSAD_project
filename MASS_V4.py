@@ -37,10 +37,11 @@ class MASS_V4:
             ndiv = np.divide(dot_p, sigmaT)
             neg = (ndiv>m).sum()
             if neg > 0:
-                print(f"found negative values in sqrt, total {neg}")
+                print(f"found negative values in sqrt, total {neg}; m={m}")
             d = np.sqrt(2.0 * (m - np.divide(dot_p, sigmaT)))  # sigmaT[m:end] in Matlab
             if sum(np.isnan(d)) > 0:
                 print(f"Found nan values from np.div: {sum(np.isnan(d))} out of {len(d)}")
+                break
             dist = np.concatenate((dist, d))
         return dist
 
@@ -68,7 +69,7 @@ class MASS_V4:
             print(f"Found nan values in x_pad: {sum(np.isnan(x_pad))} out of {len(x_pad)}")
         if sum(np.isnan(y_pad)) > 0:
             print(f"Found nan values in y_pad: {sum(np.isnan(y_pad))} out of {len(y_pad)}")
-        # print(f"len(x_pad)={len(x_pad)} ; len(y_pad)={len(y_pad)} ; si={si}")
+        print(f"len(x_pad)={len(x_pad)} ; len(y_pad)={len(y_pad)} ; si={si}")
         N = len(x_pad)
         xc = dct(x_pad, type=2)
         yc = dct(y_pad, type=2)
