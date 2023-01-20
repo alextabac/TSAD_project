@@ -27,9 +27,8 @@ class MASS_V4:
             if right >= n:
                 right = n
             dot_p = self.dct_dot_product(T[j:right], Q)
-            sigmaT = self.movstd(T[j:right], m)
-            sigmaT[np.isnan(sigmaT)] = 1.0
-            # sigmaT[sigmaT < 1.0] = 1.0
+            sigmaT = self.movstd(T[j:right], m)  # in Matlab they use w=1 such that normalized N and not N-1
+            # sigmaT[np.isnan(sigmaT)] = 1.0
             d = np.sqrt(2.0 * (m - np.divide(dot_p, sigmaT)))  # sigmaT[m:end] in Matlab
             dist = np.concatenate((dist, d))
         return dist
