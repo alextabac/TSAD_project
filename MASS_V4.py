@@ -33,6 +33,10 @@ class MASS_V4:
             sigmaT[np.isnan(sigmaT)] = 1.0
             if sum(np.isnan(sigmaT)) > 0:
                 print(f"Found nan values from movstd: {sum(np.isnan(sigmaT))} out of {len(sigmaT)}")
+            ndiv = np.divide(dot_p, sigmaT)
+            neg = (ndiv>m).sum()
+            if neg > 0:
+                print(f"found negative values in sqrt, total {neg}")
             d = np.sqrt(2.0 * (m - np.divide(dot_p, sigmaT)))  # sigmaT[m:end] in Matlab
             if sum(np.isnan(d)) > 0:
                 print(f"Found nan values from np.div: {sum(np.isnan(d))} out of {len(d)}")
