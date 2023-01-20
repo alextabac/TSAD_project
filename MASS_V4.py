@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.stats as stats
 from math import floor, sqrt
-from scipy.fftpack import dct
+from scipy.fft import dct
 
 
 class MASS_V4:
@@ -42,7 +42,7 @@ class MASS_V4:
             d = np.sqrt(2.0 * (m - np.divide(dot_p, sigmaT)))  # sigmaT[m:end] in Matlab
             if sum(np.isnan(d)) > 0:
                 print(f"Found nan values from np.div: {sum(np.isnan(d))} out of {len(d)}")
-                break
+            break
             dist = np.concatenate((dist, d))
         return dist
 
