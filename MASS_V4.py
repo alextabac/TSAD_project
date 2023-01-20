@@ -19,14 +19,14 @@ class MASS_V4:
         """
         n = len(T)
         m = len(Q)
-        Q = zNorm(Q)
+        Q = self.zNorm(Q)
         dist = np.array([])
         batch = self.get_batch_size(k, m)
         for j in range(0, n - m + 1, batch - m + 1):
             right = j + batch  # -1 for Matlab code due to last index is included in slice contrary to Python
             if right >= n:
                 right = n
-            dot_p = dct_dot_product(T[j:right], Q)
+            dot_p = self.dct_dot_product(T[j:right], Q)
             sigmaT = self.movstd(T[j:right], m)
             d = np.sqrt(2.0 * (m - np.divide(dot_p, sigmaT)))  # sigmaT[m:end] in Matlab
             dist = np.concatenate((dist, d))
@@ -52,17 +52,17 @@ class MASS_V4:
         n = len(x)
         m = len(y)
         x_pad, y_pad, si = self.dct_padding(x, y)
-        print(f"x_pad={x_pad} ; y_pad={y_pad} ; si={si}")
+        # print(f"len(x_pad)={len(x_pad)} ; len(y_pad)={len(y_pad)} ; si={si}")
         N = len(x_pad)
         xc = dct(x_pad, type=2)
         yc = dct(y_pad, type=2)
         dct_product = np.multiply(xc, yc)
-        print(f"len(xc)={len(xc)} ; len(yc)={len(yc)} ; len(dct_product)={len(dct_product)} ; N={N}")
+        # print(f"len(xc)={len(xc)} ; len(yc)={len(yc)} ; len(dct_product)={len(dct_product)} ; N={N}")
         dct_product.resize(N + 1)
         dct_product[N] = 0
         dct_product[0] *= sqrt(2)
         dot_p = dct(dct_product, type=1)
-        print(f"len(dot_p)={len(dot_p)}")
+        # print(f"len(dot_p)={len(dot_p)}")
         dot_p[0] *= 2
         dot_p = sqrt(2 * N) * dot_p[si: si + n - m + 1]
         return dot_p
@@ -73,7 +73,7 @@ class MASS_V4:
         p2 = floor((n - m + 1) / 2)
         p1 = p2 + floor((m + 1) / 2)
         p4 = n - m + p1 - p2
-        print(f"p1={p1} ; p2={p2} ; p4={p4}")
+        # print(f"p1={p1} ; p2={p2} ; p4={p4}")
         x_pad = np.zeros(p1 + n)
         x_pad[p1:] = x
         y_pad = np.zeros(m + p2 + p4)
