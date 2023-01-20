@@ -27,6 +27,7 @@ class MASS_V4:
             if right >= n:
                 right = n
             dot_p = self.dct_dot_product(T[j:right], Q)
+            print(f"max dot_p={np.max(dot_p)} ; min dot_p={np.min(dot_p)}")
             if sum(np.isnan(dot_p)) > 0:
                 print(f"Found nan values from dct_dot_product: {sum(np.isnan(dot_p))} out of {len(dot_p)}")
             sigmaT = self.movstd(T[j:right], m)
