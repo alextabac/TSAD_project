@@ -27,8 +27,14 @@ class MASS_V4:
             if right >= n:
                 right = n
             dot_p = self.dct_dot_product(T[j:right], Q)
+            if sum(~np.isnan(dot_p)) > 0:
+                print(f"Found nan values from dct_dot_product: {sum(~np.isnan(dot_p))} out of {len(dot_p)}")
             sigmaT = self.movstd(T[j:right], m)
+            if sum(~np.isnan(sigmaT)) > 0:
+                print(f"Found nan values from movstd: {sum(~np.isnan(sigmaT))} out of {len(sigmaT)}")
             d = np.sqrt(2.0 * (m - np.divide(dot_p, sigmaT)))  # sigmaT[m:end] in Matlab
+            if sum(~np.isnan(d)) > 0:
+                print(f"Found nan values from np.div: {sum(~np.isnan(d))} out of {len(d)}")
             dist = np.concatenate((dist, d))
         return dist
 
