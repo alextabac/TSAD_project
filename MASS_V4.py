@@ -1,3 +1,13 @@
+## Author: Alexandru Paul Tabacaru ; alextabac@gmail.com
+## implemented from reference below, from Matlab to Python
+## This is a MIT license doc, for reserach and study purposes only.
+
+## Referecne:
+## MASS_V4 Implementation from below reference/source-codes
+# Abdullah Mueen, Sheng Zhong, Yan Zhu, Michael Yeh, Kaveh Kamgar, Krishnamurthy Viswanathan, Chetan Kumar Gupta and
+# Eamonn Keogh (2022), The Fastest Similarity Search Algorithm for Time Series Subsequences under Euclidean Distance,
+# URL: http://www.cs.unm.edu/~mueen/FastestSimilaritySearch.html
+
 import numpy as np
 import scipy.stats as stats
 from math import floor, sqrt
