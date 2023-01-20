@@ -8,6 +8,12 @@
 # Eamonn Keogh (2022), The Fastest Similarity Search Algorithm for Time Series Subsequences under Euclidean Distance,
 # URL: http://www.cs.unm.edu/~mueen/FastestSimilaritySearch.html
 
+# The Matlab code for reference above was created by Sheng Zhong and Abdullah Mueen.
+# The overall time complexity of the code is O(n log n).
+# The code is free to use for research purposes.
+# The code does not produce imaginary numbers due to numerical errors,
+# k should greater than or equals to floor((3m+1) / 2).
+
 import numpy as np
 import scipy.stats as stats
 from math import floor, sqrt
