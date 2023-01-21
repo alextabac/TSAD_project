@@ -105,7 +105,7 @@ class DAMP_V2:
             print("Results:")
             print(f"Pruning Rate: {PR}")
             print(f"Predicted discord score/position: {discord_score} / {position}")
-        return discord_score, position
+        return discord_score, position, left_MP
 
     def next_pow2(self, x):
         # 1 if x == 0 else 2 ** (x - 1).bit_length()  # but no need to worry about x==0
