@@ -15,22 +15,96 @@ class DAMP_V2:
         self.start_loc = start_loc
         self.subseq_len = subseq_len
         self.initial_checks(T, subseq_len, start_loc)
-        mass_v4 = MASS_V4()
+        mass_v4 = MASS_V4(subseq_len)
         start_loc = self.start_loc
         subseq_len = self.subseq_len
-        left_MP = np.zeros(len(T))
+        # self.lookahead = self.next_pow2(16 * subseq_len)
+        lookahead = self.lookahead
+        N = len(T)
+        left_MP = np.zeros(N)
         best_so_far = -np.Inf
-        bool_vec = np.ones(len(T), dtype=bool)
+        bool_vec = np.ones(N, dtype=bool)
         for i in range(start_loc, (start_loc + (16 * subseq_len))):
             # Skip the current iteration if the corresponding boolean value
             if not bool_vec[i]:
                 left_MP[i] = left_MP[i-1]-0.00001
                 continue
-            if (i + subseq_len - 1) >= len(T):
+            if (i + subseq_len - 1) >= N:
                 break
             query = T[i:(i+subseq_len)]
-            left_MP[i] = min(mass_v4.get_similarities(T[:i+1], query))
+            left_MP[i] = min(mass_v4.dist_prof(T[:i+1], query))
+            best_so_far = max(best_so_far, left_MP[i])
+            # if lookahead is zero then it is pure online algorithm with no pruning
+            if lookahead > 0:
+                # perform forward MASS for prunning
+                start_of_mass = min(i + subseq_len, N - 1)
+                end_of_mass = min(start_of_mass + lookahead, N - 1)
+                if (end_of_mass - start_of_mass) >= subseq_len:
+                    distance_profile = mass_v4.dist_prof(T[start_of_mass:end_of_mass], query)
+                    dp_index_less_than_BSF = np.where(distance_profile < best_so_far)[0]  # get the array in tuple
+                    ts_index_less_than_BSF = dp_index_less_than_BSF + start_of_mass
+                    bool_vec[ts_index_less_than_BSF] = False  # prune these indices
 
+        for i in range(start_loc + 16 * subseq_len, N - subseq_len + 1):
+            if not bool_vec[i]:
+                # We subtract a very small number here to avoid the pruned
+                # subsequence having the same discord score as the real discord
+                left_MP[i] -= 0.00001
+                continue
+            approximate_distance = np.Inf
+            X = self.next_pow2(8 * subseq_len)
+            flag = True
+            expansion_num = 0
+            if i + subseq_len >= N:
+                break
+            query = T[i:i + subseq_len]
+
+            # Classic DAMP
+            while approximate_distance >= best_so_far:
+                # Case 1: Execute the algorithm on the time series segment
+                if expansion_num * subseq_len + i - X < 0:
+                    approximate_distance = min(mass_v4.dist_prof(T[:i], query))
+                    left_MP[i] = approximate_distance
+                    if approximate_distance > best_so_far:
+                        best_so_far = approximate_distance
+                    break
+                else:
+                    if flag:
+                        # Case 2: Execute the algorithm on the time series
+                        flag = False
+                        approximate_distance = min(mass_v4.dist_prof(T[i-X+1:i+1], query))
+                    else:
+                        # Case 3: All other cases
+                        X_start = i - X + 1 + (expansion_num * subseq_len)
+                        X_end = i - (X / 2) + (expansion_num * subseq_len)
+                        approximate_distance = min(mass_v4.dist_prof(T[X_start:X_end+1], query))
+                    if approximate_distance < best_so_far:
+                        left_MP[i] = approximate_distance
+                        break
+                    else:
+                        X = 2 * X
+                        expansion_num = expansion_num + 1
+            if lookahead > 0:
+                # Perform forward MASS for pruning
+                # The index at the beginning of the forward mass should be avoided in the exclusion zone
+                start_of_mass = min(i + subseq_len, N - 1)
+                end_of_mass = min(start_of_mass + lookahead - 1, N - 1)
+                if (end_of_mass - start_of_mass + 1) > subseq_len:
+                    distance_profile = mass_v4.dist_prof(T[start_of_mass:end_of_mass+1], query)
+                    dp_index_less_than_BSF = np.where(distance_profile < best_so_far)[0]  # get the array in tuple
+                    ts_index_less_than_BSF = dp_index_less_than_BSF + start_of_mass
+                    bool_vec[ts_index_less_than_BSF] = False  # prune these indices
+
+        # Get pruning rate
+        PV = bool_vec[start_loc: N - subseq_len + 1]
+        PR = (len(PV)-sum(PV))/(len(PV))
+        # Get top discord
+        discord_score = max(left_MP) - 0.0000001
+        position = np.where(left_MP >= discord_score)
+        if self.enable_output:
+            print("Results:")
+            print(f"Pruning Rate: {PR}")
+            print(f"Predicted discord score/position: {discord_score} / {position}")
 
     def next_pow2(self, x):
         # 1 if x == 0 else 2 ** (x - 1).bit_length()  # but no need to worry about x==0

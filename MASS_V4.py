@@ -21,11 +21,16 @@ from scipy.fft import dct
 
 
 class MASS_V4:
+    def __init__(self, q_size, k_size=0):
+        self.m = q_size
+        self.k = k_size
+        if k_size < q_size:
+            self.k = floor((3 * q_size + 1.0) / 2.0)
 
     def zNorm(self, Q):
         return stats.zscore(Q)
 
-    def get_similarities(self, T, Q, k=0):
+    def dist_prof(self, T, Q):
         """
         Euclidean distance metric.
         :param T:
@@ -37,8 +42,7 @@ class MASS_V4:
         m = len(Q)
         Q = self.zNorm(Q)
         dist = np.array([])
-        if k < m:
-            k = floor((3 * m + 1.0) / 2.0)
+        k = self.k
         batch = self.get_batch_size(k, m)
         for j in range(0, n - m + 1, batch - m + 1):
             right = j + batch  # -1 for Matlab code due to last index is included in slice contrary to Python
