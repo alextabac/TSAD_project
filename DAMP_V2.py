@@ -100,7 +100,7 @@ class DAMP_V2:
         PR = (len(PV)-sum(PV))/(len(PV))
         # Get top discord
         discord_score = max(left_MP) - 0.0000001
-        position = np.where(left_MP >= discord_score)
+        position = np.where(left_MP >= discord_score)[0]
         if self.enable_output:
             print("Results:")
             print(f"Pruning Rate: {PR}")
