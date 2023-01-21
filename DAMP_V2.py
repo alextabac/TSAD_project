@@ -75,8 +75,8 @@ class DAMP_V2:
                         approximate_distance = min(mass_v4.dist_prof(T[i-X+1:i+1], query))
                     else:
                         # Case 3: All other cases
-                        X_start = i - X + 1 + (expansion_num * subseq_len)
-                        X_end = i - (X / 2) + (expansion_num * subseq_len)
+                        X_start = int(i - X + 1 + (expansion_num * subseq_len))
+                        X_end = int(i - (X / 2) + (expansion_num * subseq_len))
                         approximate_distance = min(mass_v4.dist_prof(T[X_start:X_end+1], query))
                     if approximate_distance < best_so_far:
                         left_MP[i] = approximate_distance
@@ -87,8 +87,8 @@ class DAMP_V2:
             if lookahead > 0:
                 # Perform forward MASS for pruning
                 # The index at the beginning of the forward mass should be avoided in the exclusion zone
-                start_of_mass = min(i + subseq_len, N - 1)
-                end_of_mass = min(start_of_mass + lookahead - 1, N - 1)
+                start_of_mass = int(min(i + subseq_len, N - 1))
+                end_of_mass = int(min(start_of_mass + lookahead - 1, N - 1))
                 if (end_of_mass - start_of_mass + 1) > subseq_len:
                     distance_profile = mass_v4.dist_prof(T[start_of_mass:end_of_mass+1], query)
                     dp_index_less_than_BSF = np.where(distance_profile < best_so_far)[0]  # get the array in tuple
