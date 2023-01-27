@@ -45,10 +45,12 @@ class Data_Preprocess:
         if all_cols:
             df['RUN_START_DATE'] = pd.to_datetime(df['RUN_START_DATE'])
             df = df.sort_values('RUN_START_DATE')
-            if self.agg_str != '':
-                df.insert(0, 'time', df['RUN_START_DATE'].dt.floor(self.agg_str))
-            else:
+            if self.agg_str == '':
+                print("Equal '' !!!")
                 df.insert(0, 'time', df['RUN_START_DATE'])
+            else:
+                print("Aggregating !!!")
+                df.insert(0, 'time', df['RUN_START_DATE'].dt.floor(self.agg_str))
             df['mean'] = df.groupby(['Equip', 'Feature'], as_index=False)['PREP_VALUE'].transform('mean')
             df['std'] = df.groupby(['Equip', 'Feature'], as_index=False)['PREP_VALUE'].transform('std')
             df['norm'] = (df['PREP_VALUE'] - df['mean']) / df['std']
