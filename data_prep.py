@@ -46,18 +46,21 @@ class Data_Preprocess:
             df['RUN_START_DATE'] = pd.to_datetime(df['RUN_START_DATE'])
             df = df.sort_values('RUN_START_DATE')
             if self.agg_str == '':
-                print("Equal '' !!!")
                 df.insert(0, 'time', df['RUN_START_DATE'])
             else:
-                print("Aggregating !!!")
                 df.insert(0, 'time', df['RUN_START_DATE'].dt.floor(self.agg_str))
             df['mean'] = df.groupby(['Equip', 'Feature'], as_index=False)['PREP_VALUE'].transform('mean')
             df['std'] = df.groupby(['Equip', 'Feature'], as_index=False)['PREP_VALUE'].transform('std')
             df['norm'] = (df['PREP_VALUE'] - df['mean']) / df['std']
             df = df.drop(['PREP_VALUE', 'mean', 'std'], axis=1)
-            df = df.groupby(['time', 'RUN_START_WW', 'Equip', 'Feature'], as_index=False)['norm']. \
-                agg(['mean', 'std']).reset_index().fillna(0)
-            df = df.melt(id_vars=['time', 'RUN_START_WW', 'Equip', 'Feature'], value_vars=['mean', 'std'])
+            if self.agg_str == '':
+                df = df.groupby(['time', 'RUN_START_WW', 'Equip', 'Feature'], as_index=False)['norm']. \
+                    agg(['mean']).reset_index().fillna(0)
+                df = df.melt(id_vars=['time', 'RUN_START_WW', 'Equip', 'Feature'], value_vars=['mean'])
+            else:
+                df = df.groupby(['time', 'RUN_START_WW', 'Equip', 'Feature'], as_index=False)['norm'].\
+                    agg(['mean', 'std']).reset_index().fillna(0)
+                df = df.melt(id_vars=['time', 'RUN_START_WW', 'Equip', 'Feature'], value_vars=['mean', 'std'])
             df['series'] = df['Feature'] + "_" + df['variable']
             df = df.drop(['Feature', 'variable'], axis=1)
             self.df = df
