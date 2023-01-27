@@ -55,18 +55,20 @@ class Data_Preprocess:
                 df.insert(0, 'time', df['RUN_START_DATE'])
             else:
                 df.insert(0, 'time', df['RUN_START_DATE'].dt.floor(self.agg_str))
-            df['mean'] = df.groupby(['Equip', 'Feature'], as_index=False)['PREP_VALUE'].transform('mean')
-            df['std'] = df.groupby(['Equip', 'Feature'], as_index=False)['PREP_VALUE'].transform('std')
-            df['norm'] = (df['PREP_VALUE'] - df['mean']) / df['std']
-            df = df.drop(['PREP_VALUE', 'mean', 'std'], axis=1)
+            # df['mean'] = df.groupby(['Equip', 'Feature'], as_index=False)['PREP_VALUE'].transform('mean')
+            # df['std'] = df.groupby(['Equip', 'Feature'], as_index=False)['PREP_VALUE'].transform('std')
+            # df['norm'] = (df['PREP_VALUE'] - df['mean']) / df['std']
+            # df = df.drop(['PREP_VALUE', 'mean', 'std'], axis=1)
             if self.agg_str == '':
-                df = df.groupby(['time', 'RUN_START_WW', 'Equip', 'Feature'], as_index=False)['norm']. \
+                df = df.groupby(['time', 'RUN_START_WW', 'Equip', 'Feature'], as_index=False)['PREP_VALUE']. \
                     agg(['mean']).reset_index().fillna(0)
+                df = df.rename(columns={'mean': 'value'})
                 # df = df.melt(id_vars=['time', 'RUN_START_WW', 'Equip', 'Feature'], value_vars=['mean'])
             else:
-                df = df.groupby(['time', 'RUN_START_WW', 'Equip', 'Feature'], as_index=False)['norm'].\
+                df = df.groupby(['time', 'RUN_START_WW', 'Equip', 'Feature'], as_index=False)['PREP_VALUE'].\
                     agg(['mean', 'std']).reset_index().fillna(0)
                 df = df.melt(id_vars=['time', 'RUN_START_WW', 'Equip', 'Feature'], value_vars=['mean', 'std'])
+                # results in column name 'value'
             df['series'] = df['Feature'] + "_" + df['variable']
             df = df.drop(['Feature', 'variable'], axis=1)
             self.df = df
@@ -85,19 +87,26 @@ class Data_Preprocess:
             ddf = self.df[self.df['key'] == ukey]
             ddf = ddf.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
             ddf = ddf.reset_index(drop=True)
+            m = np.mean(ddf['value'])
+            s = np.std(ddf['value'])
+            if s > 0:
+                ddf['norm_value'] = (ddf['PREP_VALUE'] - m) / s
+            else:
+                ddf['norm_value'] = ddf['PREP_VALUE'] - m
+            ddf = ddf.drop(['value'], axis=1)
             ddf_list = []
             if self.agg_type != '':
                 points = self.agg_type_dict_hours[self.agg_type] * self.th_hours / self.agg_cnt  # # of points for th
             else:  # assuming raw data is per second
                 points = self.th_hours * 3600  # amount of seconds in threshold window size, assuming data is raw 1sec
-            self.recur_split_series_no_multi_clusters(ukey, ddf, ddf_list, ave_size=200, threshold=1.8)
+            self.recur_split_series_no_multi_clusters(ukey, ddf, ddf_list, ave_size=points, threshold=1.8)
             for ddfl in ddf_list:
                 ddfl = ddfl.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
                 ddfl = ddfl.reset_index(drop=True)
-                m = np.mean(ddfl['value'])
-                s = np.std(ddfl['value'])
-                ddfl['norm'] = (ddfl['value'] - m) / s
-                ddfl = ddfl.drop(['value'], axis=1)
+                m = np.mean(ddfl['norm_value'])
+                s = np.std(ddfl['norm_value'])
+                ddfl['norm'] = (ddfl['norm_value'] - m) / s
+                ddfl = ddfl.drop(['norm_value'], axis=1)
                 dfs.append(ddfl)
         self.dfs = dfs
         e_time = datetime.now()
@@ -116,8 +125,8 @@ class Data_Preprocess:
         delta = 0
         ki = 0
         for i in range(ave_size, len(df) - ave_size):
-            k1 = np.mean(df[(i - ave_size + 1):i]['value'].values)
-            k2 = np.mean(df[i:(i + ave_size - 1)]['value'].values)
+            k1 = np.mean(df[(i - ave_size + 1):i]['norm_value'].values)
+            k2 = np.mean(df[i:(i + ave_size - 1)]['norm_value'].values)
             d = abs(k1 - k2)
             if d > delta:
                 delta = d
