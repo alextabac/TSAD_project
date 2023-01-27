@@ -87,13 +87,7 @@ class Data_Preprocess:
             ddf = self.df[self.df['key'] == ukey]
             ddf = ddf.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
             ddf = ddf.reset_index(drop=True)
-            m = np.mean(ddf['value'])
-            s = np.std(ddf['value'])
-            if s > 0:
-                ddf['norm_value'] = (ddf['PREP_VALUE'] - m) / s
-            else:
-                ddf['norm_value'] = ddf['PREP_VALUE'] - m
-            ddf = ddf.drop(['value'], axis=1)
+            ddf = self.znorm_df(ddf)
             ddf_list = []
             if self.agg_type != '':
                 points = self.agg_type_dict_hours[self.agg_type] * self.th_hours / self.agg_cnt  # # of points for th
@@ -103,10 +97,7 @@ class Data_Preprocess:
             for ddfl in ddf_list:
                 ddfl = ddfl.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
                 ddfl = ddfl.reset_index(drop=True)
-                m = np.mean(ddfl['norm_value'])
-                s = np.std(ddfl['norm_value'])
-                ddfl['norm'] = (ddfl['norm_value'] - m) / s
-                ddfl = ddfl.drop(['norm_value'], axis=1)
+                ddfl = self.znorm_df(ddfl)
                 dfs.append(ddfl)
         self.dfs = dfs
         e_time = datetime.now()
@@ -125,10 +116,22 @@ class Data_Preprocess:
         delta = 0
         ki = 0
         for i in range(ave_size, len(df) - ave_size):
-            k1 = np.mean(df[(i - ave_size + 1):i]['norm_value'].values)
-            k2 = np.mean(df[i:(i + ave_size - 1)]['norm_value'].values)
+            k1 = np.mean(df[(i - ave_size + 1):i]['value'].values)
+            k2 = np.mean(df[i:(i + ave_size - 1)]['value'].values)
             d = abs(k1 - k2)
             if d > delta:
                 delta = d
                 ki = i
         return delta, ki
+
+    def znorm_df(self, df, val_name='value'):
+        tmp_name = val_name + '2'
+        df = df.rename(columns={val_name: tmp_name})
+        m = np.mean(df[tmp_name])
+        s = np.std(df[tmp_name])
+        if s > 0:
+            df[val_name] = (df[tmp_name] - m) / s
+        else:
+            df[val_name] = df[tmp_name] - m
+        df = df.drop([tmp_name], axis=1)
+        return df
