@@ -99,7 +99,10 @@ class DAMP_V2:
 
         # Get pruning rate
         PV = bool_vec[start_loc: N - subseq_len + 1]
-        PR = (len(PV)-sum(PV))/(len(PV))
+        if len(PV) > 0:
+            PR = (len(PV)-sum(PV))/(len(PV))
+        else:
+            PR = 0
         # Get top discord
         discord_score = max(left_MP) - 0.0000001
         position = np.where(left_MP >= discord_score)[0]
