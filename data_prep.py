@@ -8,7 +8,7 @@ class Data_Preprocess:
     and each time window will be represented by mean/std-dev (if aggregation type was provided).
     """
 
-    def __init__(self, aggregate_type='', aggregate_amount=1):
+    def __init__(self, aggregate_type='', aggregate_amount=1, threshold_hours=12):
         """
         Initialize and define the aggregation type and amount.
         :param aggregate_type: 's' = seconds , 'min' = minutes , 'H' = hours , 'D' = days
@@ -16,10 +16,16 @@ class Data_Preprocess:
         """
         self.df = None
         self.dfs = []
+        self.th_hours = threshold_hours
+        self.agg_type = aggregate_type
+        self.agg_cnt = aggregate_amount
+        self.agg_type_list = ['s', 'min', 'H', 'D']
+        self.agg_type_dict_hours = {'s': 3600, 'min': 60, 'H': 1, 'D': 1.0/24.0}  # points per hour
         if type(aggregate_type) != str or type(aggregate_amount) != int or \
-                aggregate_type not in ['s', 'min', 'H', 'D']:
+                aggregate_type not in self.agg_type_list:
             print("Aggregation type not recognized, set to no aggregation.")
             self.agg_str = ''
+            self.agg_type = ''
         else:
             self.agg_str = str(aggregate_amount) + aggregate_type
 
@@ -56,7 +62,7 @@ class Data_Preprocess:
             if self.agg_str == '':
                 df = df.groupby(['time', 'RUN_START_WW', 'Equip', 'Feature'], as_index=False)['norm']. \
                     agg(['mean']).reset_index().fillna(0)
-                df = df.melt(id_vars=['time', 'RUN_START_WW', 'Equip', 'Feature'], value_vars=['mean'])
+                # df = df.melt(id_vars=['time', 'RUN_START_WW', 'Equip', 'Feature'], value_vars=['mean'])
             else:
                 df = df.groupby(['time', 'RUN_START_WW', 'Equip', 'Feature'], as_index=False)['norm'].\
                     agg(['mean', 'std']).reset_index().fillna(0)
@@ -80,7 +86,11 @@ class Data_Preprocess:
             ddf = ddf.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
             ddf = ddf.reset_index(drop=True)
             ddf_list = []
-            self.recur_split_series_no_multi_clusters(ukey, ddf, ddf_list, ave_size=20, threshold=1.8)
+            if self.agg_type != '':
+                points = self.agg_type_dict_hours[self.agg_type] * self.th_hours / self.agg_cnt  # # of points for th
+            else:  # assuming raw data is per second
+                points = self.th_hours * 3600  # amount of seconds in threshold window size, assuming data is raw 1sec
+            self.recur_split_series_no_multi_clusters(ukey, ddf, ddf_list, ave_size=200, threshold=1.8)
             for ddfl in ddf_list:
                 ddfl = ddfl.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
                 ddfl = ddfl.reset_index(drop=True)
