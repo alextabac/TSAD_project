@@ -1,8 +1,8 @@
 
 import numpy as np
 from datetime import datetime
-from math import floor
 from MASS_V4 import MASS_V4
+
 
 class DAMP_V2:
     def __init__(self, var_arg_in):
@@ -38,7 +38,7 @@ class DAMP_V2:
             best_so_far = max(best_so_far, left_MP[i])
             # if lookahead is zero then it is pure online algorithm with no pruning
             if lookahead > 0:
-                # perform forward MASS for prunning
+                # perform forward MASS for pruning
                 start_of_mass = min(i + subseq_len, N - 1)
                 end_of_mass = min(start_of_mass + lookahead, N - 1)
                 if (end_of_mass - start_of_mass) >= subseq_len:
@@ -112,11 +112,13 @@ class DAMP_V2:
             print(f"Predicted discord score/position: {discord_score} / {position}")
         return discord_score, position, left_MP
 
-    def next_pow2(self, x):
+    @staticmethod
+    def next_pow2(x):
         # 1 if x == 0 else 2 ** (x - 1).bit_length()  # but no need to worry about x==0
         return 2 ** (x - 1).bit_length()
 
-    def contains_constant_regions(self, T, subsequence_len):
+    @staticmethod
+    def contains_constant_regions(T, subsequence_len):
         # Assuming T has reset index
         bool_vec = False
         constant_indices = np.ediff1d(np.where(np.ediff1d(T) == 0))
@@ -170,7 +172,7 @@ class DAMP_V2:
                 self.start_loc = subsequence_len
             print("------------------------------------------\n\n")
         elif start_loc > (len(T)-subsequence_len+1):
-            print("WARNING: ");
+            print("WARNING: ")
             print("Location to start processing cannot be greater than length(T)-S+1")
             self.start_loc = (len(T)-subsequence_len+1)
             print(f"Location to start processing has been set to {self.start_loc}.")

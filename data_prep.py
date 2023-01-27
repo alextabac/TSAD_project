@@ -9,7 +9,7 @@ class Data_Preprocess:
     and each time window will be represented by mean/std-dev (if aggregation type was provided).
     """
 
-    def __init__(self, aggregate_type='', aggregate_amount=1, threshold_hours=12):
+    def __init__(self, aggregate_type='', aggregate_amount=1, threshold_hours=12, feature_num=None):
         """
         Initialize and define the aggregation type and amount.
         :param aggregate_type: 's' = seconds , 'min' = minutes , 'H' = hours , 'D' = days
@@ -17,6 +17,7 @@ class Data_Preprocess:
         """
         self.df = None
         self.dfs = []
+        self.feature_n = feature_num
         self.th_hours = threshold_hours
         self.agg_type = aggregate_type
         self.agg_cnt = aggregate_amount
@@ -84,7 +85,13 @@ class Data_Preprocess:
         self.df['key'] = self.df['Equip'] + "_" + self.df['series']
         uniq_keys = self.df['key'].unique()
         dfs = []
+        if self.feature_n is not None:
+            feat = 'Feature' + str(self.feature_n)
+        else:
+            feat = ''
         for ukey in uniq_keys:
+            if self.feature_n is not None and feat not in ukey:
+                continue
             print(f"Preparing key series {ukey} ...")
             ddf = self.df[self.df['key'] == ukey]
             ddf = ddf.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
