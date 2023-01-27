@@ -17,7 +17,7 @@ class Data_Preprocess:
         self.df = None
         self.dfs = []
         if type(aggregate_type) != str or type(aggregate_amount) != int or \
-                aggregate_type not in ['', 's', 'min', 'H', 'D'] :
+                aggregate_type not in ['s', 'min', 'H', 'D']:
             print("Aggregation type not recognized, set to no aggregation.")
             self.agg_str = ''
         else:
