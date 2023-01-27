@@ -1,6 +1,7 @@
 from datetime import datetime
 import numpy as np
 import pandas as pd
+from math import floor
 
 class Data_Preprocess:
     """
@@ -91,9 +92,10 @@ class Data_Preprocess:
             ddf = self.znorm_df(ddf)
             ddf_list = []
             if self.agg_type != '':
-                points = self.agg_type_dict_hours[self.agg_type] * self.th_hours / self.agg_cnt  # # of points for th
+                # number of points for threshold
+                points = floor(self.agg_type_dict_hours[self.agg_type] * self.th_hours / self.agg_cnt)
             else:  # assuming raw data is per second
-                points = self.th_hours * 3600  # amount of seconds in threshold window size, assuming data is raw 1sec
+                points = floor(self.th_hours * 3600)  # amount of seconds in threshold window size
             self.recur_split_series_no_multi_clusters(ukey, ddf, ddf_list, ave_size=points, threshold=1.8)
             for ddfl in ddf_list:
                 ddfl = ddfl.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
@@ -116,7 +118,7 @@ class Data_Preprocess:
     def get_series_split_max_distance(self, df, ave_size=10):
         delta = 0
         ki = 0
-        for i in range(ave_size, len(df) - ave_size):
+        for i in range(ave_size, (len(df) - ave_size)):
             k1 = np.mean(df[(i - ave_size + 1):i]['value'].values)
             k2 = np.mean(df[i:(i + ave_size - 1)]['value'].values)
             d = abs(k1 - k2)
