@@ -1,5 +1,6 @@
 
 import numpy as np
+from datetime import datetime
 from math import floor
 from MASS_V4 import MASS_V4
 
@@ -12,6 +13,7 @@ class DAMP_V2:
         self.subseq_len = 0
 
     def DAMP_2_0(self, T, subseq_len, start_loc):
+        s_time = datetime.now()
         self.start_loc = start_loc
         self.subseq_len = subseq_len
         self.initial_checks(T, subseq_len, start_loc)
@@ -101,8 +103,11 @@ class DAMP_V2:
         # Get top discord
         discord_score = max(left_MP) - 0.0000001
         position = np.where(left_MP >= discord_score)[0]
+        e_time = datetime.now()
+        d_time = e_time - s_time
         if self.enable_output:
             print("Results:")
+            print(f"DAMP_V2 run time {d_time}")
             print(f"Pruning Rate: {PR}")
             print(f"Predicted discord score/position: {discord_score} / {position}")
         return discord_score, position, left_MP
