@@ -55,6 +55,7 @@ class Data_Preprocess:
                 df.insert(0, 'time', df['RUN_START_DATE'])
             else:
                 df.insert(0, 'time', df['RUN_START_DATE'].dt.floor(self.agg_str))
+            df = df.drop(['RUN_START_DATE'], axis=1)
             # df['mean'] = df.groupby(['Equip', 'Feature'], as_index=False)['PREP_VALUE'].transform('mean')
             # df['std'] = df.groupby(['Equip', 'Feature'], as_index=False)['PREP_VALUE'].transform('std')
             # df['norm'] = (df['PREP_VALUE'] - df['mean']) / df['std']
