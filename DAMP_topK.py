@@ -22,7 +22,7 @@ class DAMP_topK:
         left_MP = np.zeros(N)
         best_so_far = -np.Inf
         bool_vec = np.ones(N, dtype=bool)
-        lookahead = DAMP_topK.next_pow2(16 * subseq_len)
+        lookahead = DAMP_topK.next_pow2(2 * subseq_len)
         if self.enable_output:
             print(f"Auto subsequence length set to {subseq_len}.")
             print(f"Starting from index {curr_index}, with lookahead of {lookahead}")
