@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import random
+from datetime import datetime
 
 
 class HOT_SAX:
@@ -27,7 +28,8 @@ class HOT_SAX:
         self.idx = []  # outer heuristic order of indices
         self.set_alphabeta()
 
-    def search(self):
+    def search(self, print_out=False):
+        s_time = datetime.now()
         best_dist = 0.0
         best_loc = -1
         cnt = 500
@@ -46,10 +48,15 @@ class HOT_SAX:
             if np.Inf > nearest_neighbor_dist > best_dist:
                 best_dist = nearest_neighbor_dist
                 best_loc = p
-            cnt -= 1
-            if cnt < 0:
-                cnt = 500
-                print(f"Passed another 500 iterations out of {len(self.idx)}")
+            if print_out:
+                cnt -= 1
+                if cnt < 0:
+                    cnt = 500
+                    print(f"Passed another 500 iterations out of {len(self.idx)}")
+        e_time = datetime.now()
+        d_time = e_time - s_time
+        if print_out:
+            print(f"HOT SAX completed with run time {d_time}")
         return best_dist, best_loc
 
     def init_norm(self):
