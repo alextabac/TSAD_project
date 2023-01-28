@@ -61,7 +61,9 @@ class HOT_SAX:
         else:
             ts = (ts - m)
         sax_ts = np.chararray(shape=(len(ts)))
-        for i in range(len(ts)):
+        n = int(len(ts))
+        print(f"type {type(n)} ; value={n}")
+        for i in range(n):
             sax_ts[i] = self.get_sax(ts[i])  # the same series but in SAX alphabet
         # counting words
         sax_wc = {}
