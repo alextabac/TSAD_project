@@ -58,9 +58,9 @@ class HOT_SAX:
         m = np.mean(self.ts['value'].values)
         s = np.std(self.ts['value'].values)
         if s > 0.0:
-            self.ts['values'] = (self.ts['values'] - m) / s
+            self.ts['value'] = (self.ts['value'] - m) / s
         else:
-            self.ts['values'] = (self.ts['values'] - m)
+            self.ts['value'] = (self.ts['value'] - m)
         self.ts['SAX'] = self.ts.apply(lambda r: self.get_sax(r.value), axis=1)
         # counting words
         sax_wc = {}
