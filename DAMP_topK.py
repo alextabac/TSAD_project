@@ -31,6 +31,8 @@ class DAMP_topK:
         if self.enable_output:
             print("Prefix handled starting.")
         for i in range(curr_index, curr_index + 16 * subseq_len + 1):
+            if self.enable_output:
+                print(f"left_MP iteration {i} out of {(curr_index + 16 * subseq_len)}")
             # Use the brute force for the left Matrix Profile value
             if (i + subseq_len) > N:
                 break
