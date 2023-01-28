@@ -31,7 +31,7 @@ class DAMP_V2:
             if not bool_vec[i]:
                 left_MP[i] = left_MP[i-1]-0.00001
                 continue
-            if (i + subseq_len - 1) >= N:
+            if (i + subseq_len) > N:
                 break
             query = T[i:(i+subseq_len)]
             left_MP[i] = min(mass_v4.dist_prof(T[:i+1], query))
@@ -90,9 +90,9 @@ class DAMP_V2:
                 # Perform forward MASS for pruning
                 # The index at the beginning of the forward mass should be avoided in the exclusion zone
                 start_of_mass = int(min(i + subseq_len, N - 1))
-                end_of_mass = int(min(start_of_mass + lookahead - 1, N - 1))
-                if (end_of_mass - start_of_mass + 1) > subseq_len:
-                    distance_profile = mass_v4.dist_prof(T[start_of_mass:end_of_mass+1], query)
+                end_of_mass = int(min(start_of_mass + lookahead, N))
+                if (end_of_mass - start_of_mass) >= subseq_len:
+                    distance_profile = mass_v4.dist_prof(T[start_of_mass:end_of_mass], query)
                     dp_index_less_than_BSF = np.where(distance_profile < best_so_far)[0]  # get the array in tuple
                     ts_index_less_than_BSF = dp_index_less_than_BSF + start_of_mass
                     bool_vec[ts_index_less_than_BSF] = False  # prune these indices
