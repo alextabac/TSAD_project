@@ -30,6 +30,7 @@ class HOT_SAX:
     def search(self):
         best_dist = 0.0
         best_loc = -1
+        cnt = 500
         for p in self.idx:
             nearest_neighbor_dist = np.Inf
             word = self.sax_array.loc[p, 'word']
@@ -45,6 +46,10 @@ class HOT_SAX:
             if np.Inf > nearest_neighbor_dist > best_dist:
                 best_dist = nearest_neighbor_dist
                 best_loc = p
+            cnt -= 1
+            if cnt < 0:
+                cnt = 500
+                print(f"Passed another 500 iterations out of {len(self.idx)}")
         return best_dist, best_loc
 
     def init_norm(self):
