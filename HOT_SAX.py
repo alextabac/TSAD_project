@@ -2,7 +2,8 @@
 import numpy as np
 import pandas as pd
 
-class hot_sax:
+
+class HOT_SAX:
     def __init__(self, ts):
         self.alpha = 5  # default value
         self.wsize = 8  # default value
