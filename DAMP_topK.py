@@ -28,8 +28,6 @@ class DAMP_topK:
             print(f"Starting from index {curr_index}, with lookahead of {lookahead}")
         # Handle the prefix to get a relatively high best so far discord score
         # Prefix for top k
-        if self.enable_output:
-            print("Prefix handled starting.")
         cnt = int(curr_index/500) - 1
         for i in range(curr_index, curr_index + lookahead + 1):
             if self.enable_output and cnt < int(i/500):
@@ -39,19 +37,13 @@ class DAMP_topK:
             if (i + subseq_len) > N:
                 break
             left_MP[i] = min(mass_v4.dist_prof(ts[:i + 1], ts[i:i + subseq_len]))
-        if self.enable_output:
-            print("Prefix part 1 done.")
         left_MP_copy = left_MP.copy()
         for k in range(discords_num):
-            if self.enable_output:
-                print(f"Prefix iteration k discord {k}.")
             imax = np.argmax(left_MP_copy)
             best_so_far = left_MP_copy[imax]
             discord_start = max(1, imax - half_seqlen) - 1
             discord_end = max(half_seqlen + 1, imax + half_seqlen) + 1
             left_MP_copy[discord_start: discord_end] = -np.Inf
-        if self.enable_output:
-            print("Prefix has been handled.")
 
         # Remaining test data except for the prefix
         cnt = int(curr_index + 16 * subseq_len + 1/500) - 1
