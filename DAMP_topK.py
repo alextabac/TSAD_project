@@ -148,9 +148,9 @@ class DAMP_topK:
 
     @staticmethod
     def xcorr(ts, max_lag=3000):
-                corr = signal.correlate(ts, ts, mode="full")
-                lags = signal.correlation_lags(max_lag, max_lag, mode="full")
-                return corr, lags
+        corr = signal.correlate(ts, ts, mode="full")
+        lags = signal.correlation_lags(max_lag, max_lag, mode="full")
+        return corr, lags
 
     @staticmethod
     def find_max_peak_index(autocor, lags):
