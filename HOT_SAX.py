@@ -35,6 +35,7 @@ class HOT_SAX:
         best_dist = 0.0
         best_loc = -1
         cnt = 500
+        j = 1
         if print_out:
             print("HOT SAX search starting now.")
         for p in self.idx:
@@ -55,8 +56,9 @@ class HOT_SAX:
             if print_out:
                 cnt -= 1
                 if cnt < 0:
+                    j += 1
                     cnt = 500
-                    print(f"Passed another 500 iterations out of {len(self.idx)}")
+                    print(f"Passed another {(j*cnt)} iterations out of {len(self.idx)}")
         self.best_dist = best_dist
         self.best_loc = best_loc
         e_time = datetime.now()
