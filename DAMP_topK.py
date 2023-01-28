@@ -8,15 +8,11 @@ from scipy.signal import find_peaks
 
 
 class DAMP_topK:
-    def __init__(self, enable_print):
+    def __init__(self, enable_print=True):
         self.enable_output = enable_print
-        self.start_loc = 0
 
-    def DAMP_k(self, ts, discords_num, start_loc):
+    def DAMP_k(self, ts, discords_num):
         s_time = datetime.now()
-        self.start_loc = start_loc
-        # self.subseq_len = subseq_len
-        # self.initial_checks(T, subseq_len, start_loc)
         autocor, lags = DAMP_topK.xcorr(ts)
         subseq_len = DAMP_topK.find_max_peak_index(autocor[3010:4001], lags[3010:4001])
         half_seqlen = floor(0.5 * subseq_len)
@@ -27,6 +23,9 @@ class DAMP_topK:
         best_so_far = -np.Inf
         bool_vec = np.ones(N, dtype=bool)
         lookahead = DAMP_topK.next_pow2(16 * subseq_len)
+        if self.enable_output:
+            print(f"Auto subsequence length set to {subseq_len}.")
+            print(f"Starting from index {curr_index}, with lookahead of {lookahead}")
         # Handle the prefix to get a relatively high best so far discord score
         # Prefix for top k
         for i in range(curr_index, curr_index + 16 * subseq_len + 1):
@@ -109,12 +108,17 @@ class DAMP_topK:
                     bool_vec[ts_index_less_than_BSF] = False  # prune these indices
 
         # Get pruning rate
-        pv = bool_vec[start_loc: N - subseq_len + 1]
+        pv = bool_vec[curr_index: N - subseq_len + 1]
         if len(pv) > 0:
             pr = (len(pv)-sum(pv))/(len(pv))
         else:
             pr = 0
         # Get top-k discord
+        e_time = datetime.now()
+        d_time = e_time - s_time
+        if self.enable_output:
+            print(f"DAMP_topK run time {d_time}")
+            print(f"Pruning Rate: {pr}")
         scores = []
         positions = []
         left_MP_copy = left_MP.copy()
