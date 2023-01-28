@@ -40,9 +40,13 @@ class DAMP_topK:
             discord_start = max(1, imax - half_seqlen) - 1
             discord_end = max(half_seqlen + 1, imax + half_seqlen) + 1
             left_MP_copy[discord_start: discord_end] = -np.Inf
+        if self.enable_output:
+            print("Prefix has been handled.")
 
         # Remaining test data except for the prefix
         for i in range(curr_index + 16 * subseq_len + 1, N - subseq_len):
+            if self.enable_output:
+                print(f"iteration {i} out of {(N - subseq_len)}")
             # Skip the current iteration if the corresponding boolean value is 0,
             # otherwise execute the current iteration
             if not bool_vec[i]:
@@ -55,7 +59,7 @@ class DAMP_topK:
             # Approximate leftMP value for the current subsequence
             approximate_distance = np.Inf
             # x indicates how long a time series to look backwards
-            x = self.next_pow2(8 * subseq_len)
+            x = DAMP_topK.next_pow2(8 * subseq_len)
             # flag indicates if it is the first iteration of DAMP
             flag = True
             # expansion_num indicates how many times the search has been
