@@ -30,8 +30,8 @@ class DAMP_topK:
         # Prefix for top k
         if self.enable_output:
             print("Prefix handled starting.")
-        cnt = 0
-        for i in range(curr_index, curr_index + 16 * subseq_len + 1):
+        cnt = int(curr_index/500) - 1
+        for i in range(curr_index, curr_index + lookahead + 1):
             if self.enable_output and cnt < int(i/500):
                 cnt += 1
                 print(f"left_MP iteration {i} out of {(curr_index + 16 * subseq_len)}")
@@ -54,14 +54,16 @@ class DAMP_topK:
             print("Prefix has been handled.")
 
         # Remaining test data except for the prefix
+        cnt = int(curr_index + 16 * subseq_len + 1/500) - 1
         for i in range(curr_index + 16 * subseq_len + 1, N - subseq_len):
-            if self.enable_output:
-                print(f"iteration {i} out of {(N - subseq_len)}")
             # Skip the current iteration if the corresponding boolean value is 0,
             # otherwise execute the current iteration
             if not bool_vec[i]:
                 left_MP[i] = left_MP[i-1]-0.00001
                 continue
+            if self.enable_output and cnt < int(i/500):
+                cnt += 1
+                print(f"process iteration {i} out of {(N - subseq_len)}")
             # Use the brute force for the left Matrix Profile value
             if (i + subseq_len) > N:
                 break
