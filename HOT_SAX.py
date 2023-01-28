@@ -23,7 +23,7 @@ class HOT_SAX:
         self.sax_array = None
         self.sax_trie = {}
         self.sax_mindd = None
-        self.ts = ts
+        self.ts = pd.DataFrame(data=ts, columns=['value'])
         self.idx = []  # outer heuristic order of indices
         self.set_alphabeta()
 
@@ -54,21 +54,19 @@ class HOT_SAX:
 
     def init_norm(self):
         ts = self.ts
+        w = self.wsize
+        n = len(ts) - w
         m = np.mean(ts)
         s = np.std(ts)
         if s > 0.0:
             ts = (ts - m) / s
         else:
             ts = (ts - m)
-        sax_ts = np.chararray(shape=(len(ts)))
-        n = int(len(ts))
-        for i in range(n):
-            sax_ts[i] = self.get_sax(ts[i])  # the same series but in SAX alphabet
+        self.ts['SAX'] = self.ts.apply(lambda r: self.get_sax(r.value), axis=1)
         # counting words
         sax_wc = {}
-        n -= self.wsize
         for i in range(n):
-            word = "".join(sax_ts[i: (i+self.wsize)])
+            word = "".join(self.ts[i: (i+w)]['SAX'].values)
             if word in sax_wc:
                 sax_wc[word] += 1
             else:
@@ -76,7 +74,7 @@ class HOT_SAX:
         # list of dicts: index, word, and the word repeat count from above loop
         rows_l = []
         for i in range(n):
-            word = "".join(sax_ts[i: (i+self.wsize)])
+            word = "".join(self.ts[i: (i+w)]['SAX'].values)
             rows_l.append({'idx': i, 'word': word, 'count': sax_wc[word]})
         self.sax_array = pd.DataFrame(rows_l)
         self.sax_trie = {}
