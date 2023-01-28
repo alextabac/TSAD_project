@@ -14,8 +14,8 @@ class DAMP_topK:
     def DAMP_k(self, ts, discords_num):
         s_time = datetime.now()
         autocor, lags = DAMP_topK.xcorr(ts)
-        subseq_len = DAMP_topK.find_max_peak_index(autocor[3010:4001], lags[3010:4001])
-        half_seqlen = floor(0.5 * subseq_len)
+        subseq_len = int(DAMP_topK.find_max_peak_index(autocor[3010:4001], lags[3010:4001]))
+        half_seqlen = int(floor(0.5 * subseq_len))
         mass_v4 = MASS_V4(subseq_len)
         curr_index = 1001
         N = len(ts)
