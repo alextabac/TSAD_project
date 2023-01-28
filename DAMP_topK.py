@@ -3,8 +3,7 @@ from math import floor
 import numpy as np
 from datetime import datetime
 from MASS_V4 import MASS_V4
-from scipy import signal
-from scipy.signal import find_peaks
+from TSAD_UTIL import *
 
 
 class DAMP_topK:
@@ -13,8 +12,8 @@ class DAMP_topK:
 
     def DAMP_k(self, ts, discords_num):
         s_time = datetime.now()
-        autocor, lags = DAMP_topK.xcorr(ts)
-        subseq_len = int(DAMP_topK.find_max_peak_index(autocor[3010:4001], lags[3010:4001]))
+        autocor, lags = xcorr(ts)
+        subseq_len = int(find_max_peak_index(autocor[3010:4001], lags[3010:4001]))
         half_seqlen = int(floor(0.5 * subseq_len))
         mass_v4 = MASS_V4(subseq_len)
         curr_index = 1001
@@ -22,7 +21,7 @@ class DAMP_topK:
         left_MP = np.zeros(N)
         best_so_far = -np.Inf
         bool_vec = np.ones(N, dtype=bool)
-        lookahead = DAMP_topK.next_pow2(2 * subseq_len)
+        lookahead = next_pow2(2 * subseq_len)
         if self.enable_output:
             print(f"Auto subsequence length set to {subseq_len}.")
             print(f"Starting from index {curr_index}, with lookahead of {lookahead}")
@@ -63,7 +62,7 @@ class DAMP_topK:
             # Approximate leftMP value for the current subsequence
             approximate_distance = np.Inf
             # x indicates how long a time series to look backwards
-            x = DAMP_topK.next_pow2(8 * subseq_len)
+            x = next_pow2(8 * subseq_len)
             # flag indicates if it is the first iteration of DAMP
             flag = True
             # expansion_num indicates how many times the search has been
@@ -146,24 +145,3 @@ class DAMP_topK:
             left_MP_copy[discord_start: discord_end] = -np.Inf
         return scores, positions, left_MP
 
-    @staticmethod
-    def xcorr(ts, max_lag=3000):
-        corr = signal.correlate(ts, ts, mode="full")
-        lags = signal.correlation_lags(max_lag, max_lag, mode="full")
-        return corr, lags
-
-    @staticmethod
-    def find_max_peak_index(autocor, lags):
-        idx = find_peaks(autocor)[0]
-        if len(idx) > 0:
-            new_corr = np.take(autocor, idx)
-            i = np.argmax(new_corr)
-            j = idx[i]
-            return lags[j]
-        else:
-            return 1000
-
-    @staticmethod
-    def next_pow2(x):
-        # 1 if x == 0 else 2 ** (x - 1).bit_length()  # but no need to worry about x==0
-        return 2 ** (x - 1).bit_length()

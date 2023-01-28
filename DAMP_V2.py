@@ -2,7 +2,7 @@
 import numpy as np
 from datetime import datetime
 from MASS_V4 import MASS_V4
-
+from TSAD_UTIL import *
 
 class DAMP_V2:
     def __init__(self, var_arg_in):
@@ -20,7 +20,7 @@ class DAMP_V2:
         mass_v4 = MASS_V4(subseq_len)
         start_loc = self.start_loc
         subseq_len = self.subseq_len
-        # self.lookahead = self.next_pow2(16 * subseq_len)
+        # self.lookahead = next_pow2(16 * subseq_len)
         lookahead = self.lookahead
         N = len(T)
         left_MP = np.zeros(N)
@@ -54,7 +54,7 @@ class DAMP_V2:
                 left_MP[i] -= 0.00001
                 continue
             approximate_distance = np.Inf
-            X = self.next_pow2(8 * subseq_len)
+            X = next_pow2(8 * subseq_len)
             flag = True
             expansion_num = 0
             if i + subseq_len >= N:
@@ -115,23 +115,6 @@ class DAMP_V2:
             print(f"Predicted discord score/position: {discord_score} / {position}")
         return discord_score, position, left_MP
 
-    @staticmethod
-    def next_pow2(x):
-        # 1 if x == 0 else 2 ** (x - 1).bit_length()  # but no need to worry about x==0
-        return 2 ** (x - 1).bit_length()
-
-    @staticmethod
-    def contains_constant_regions(T, subsequence_len):
-        # Assuming T has reset index
-        bool_vec = False
-        constant_indices = np.ediff1d(np.where(np.ediff1d(T) == 0))
-        serial_indices = np.split(constant_indices, np.where(constant_indices > 1)[0])
-        lengths = [len(arr) for arr in serial_indices]
-        max_len = max(lengths)
-        if max_len >= subsequence_len or np.var(T) < 0.2:
-            bool_vec = True
-        return bool_vec
-
     def initial_checks(self, T, subsequence_len, start_loc):
         if self.enable_output:
             print("-----------------------------------------------")
@@ -140,7 +123,7 @@ class DAMP_V2:
                   "or Yue Lu (ylu175@ucr.edu) to make sure you have the latest version.")
             print(f"This time series is of length {len(T)}, and the subsequence length is {subsequence_len}")
             la = self.lookahead
-            self.lookahead = self.next_pow2(self.lookahead)
+            self.lookahead = next_pow2(self.lookahead)
             print(f"The lookahead modified from {la} to the next power of 2: {self.lookahead}.")
             print("Hints:")
             print("Usually, the subsequence length you should use is between about 50 to 90% of a typical period.")
@@ -150,7 +133,7 @@ class DAMP_V2:
             print("A simple search, doubling and halving the current value,")
             print(" should let you quickly converge on a good value.")
             print("------------------------------------------\n\n")
-        if self.contains_constant_regions(T, subsequence_len):
+        if contains_constant_regions(T, subsequence_len):
             print("ERROR: ")
             print("This dataset contains constant and/or near constant regions.")
             print("We define the time series with an overall variance less than 0.2, ")
@@ -181,14 +164,11 @@ class DAMP_V2:
             print(f"Location to start processing has been set to {self.start_loc}.")
             print("------------------------------------------\n\n")
         if subsequence_len <= 8 or subsequence_len > 1000:  # <= 10 in original code
-            # [autocor,lags] = xcorr(T,3000,'coeff');
-            # [~,ReferenceSubsequenceLength] = findpeaks(autocor(3010:4000),lags(3010:4000),'SortStr','descend','NPeaks',1);
-            # self.subseq_len(isempty(ReferenceSubsequenceLength))=1000;
-            # self.subseq_len = floor(self.subseq_len)
-            print("ERROR: ")  # should be warning if able to find automatic - fix code above
-            print("The subsequence length you set may be too large or too small.")
-            # print(f"For the current input T, we recommend setting the subsequence length to {self.subseq_len}")
-            print("For the current input T, we recommend setting the subsequence to other value, now quit.")
+            old_len = subsequence_len
+            autocor, lags = xcorr(T)
+            subsequence_len = int(find_max_peak_index(autocor[3010:4001], lags[3010:4001]))
+            print("WARNING: ")
+            print("The subsequence length you set may be too large or too small")
+            print(f"For the current input, we recommend setting the subsequence length to {subsequence_len}")
             print("------------------------------------------\n\n")
-            quit()
 
