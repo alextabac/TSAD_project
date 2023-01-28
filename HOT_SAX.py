@@ -33,6 +33,8 @@ class HOT_SAX:
         best_dist = 0.0
         best_loc = -1
         cnt = 500
+        if print_out:
+            print("HOT SAX search starting now.")
         for p in self.idx:
             nearest_neighbor_dist = np.Inf
             word = self.sax_array.loc[p, 'word']
@@ -56,7 +58,8 @@ class HOT_SAX:
         e_time = datetime.now()
         d_time = e_time - s_time
         if print_out:
-            print(f"HOT SAX completed with run time {d_time}")
+            print(f"HOT SAX completed with run time {d_time}.")
+            print(f"Discord found at index {best_loc} with distance {best_distance}.")
         return best_dist, best_loc
 
     def init_norm(self):
