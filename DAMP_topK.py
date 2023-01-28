@@ -28,13 +28,19 @@ class DAMP_topK:
             print(f"Starting from index {curr_index}, with lookahead of {lookahead}")
         # Handle the prefix to get a relatively high best so far discord score
         # Prefix for top k
+        if self.enable_output:
+            print("Prefix handled starting.")
         for i in range(curr_index, curr_index + 16 * subseq_len + 1):
             # Use the brute force for the left Matrix Profile value
             if (i + subseq_len) > N:
                 break
             left_MP[i] = min(mass_v4.dist_prof(ts[:i + 1], ts[i:i + subseq_len]))
+        if self.enable_output:
+            print("Prefix part 1 done.")
         left_MP_copy = left_MP.copy()
         for k in range(discords_num):
+            if self.enable_output:
+                print(f"Prefix iteration k discord {k}.")
             imax = np.argmax(left_MP_copy)
             best_so_far = left_MP_copy[imax]
             discord_start = max(1, imax - half_seqlen) - 1
