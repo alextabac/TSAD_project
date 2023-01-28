@@ -32,7 +32,7 @@ class DAMP_topK:
         for i in range(curr_index, curr_index + lookahead + 1):
             if self.enable_output and cnt < int(i/500):
                 cnt += 1
-                print(f"left_MP iteration {i} out of {(curr_index + 16 * subseq_len)}")
+                print(f"left_MP iteration {i} out of {(curr_index + lookahead + 1)}")
             # Use the brute force for the left Matrix Profile value
             if (i + subseq_len) > N:
                 break
@@ -46,7 +46,7 @@ class DAMP_topK:
             left_MP_copy[discord_start: discord_end] = -np.Inf
 
         # Remaining test data except for the prefix
-        cnt = int(curr_index + 16 * subseq_len + 1/500) - 1
+        cnt = int((curr_index + 16 * subseq_len + 1)/500) - 1
         for i in range(curr_index + 16 * subseq_len + 1, N - subseq_len):
             # Skip the current iteration if the corresponding boolean value is 0,
             # otherwise execute the current iteration
