@@ -27,6 +27,8 @@ class HOT_SAX:
         self.ts = pd.DataFrame(data=ts, columns=['value'])
         self.idx = []  # outer heuristic order of indices
         self.set_alphabeta()
+        self.best_dist = 0.0
+        self.best_loc = -1
 
     def search(self, print_out=False):
         s_time = datetime.now()
@@ -55,11 +57,13 @@ class HOT_SAX:
                 if cnt < 0:
                     cnt = 500
                     print(f"Passed another 500 iterations out of {len(self.idx)}")
+        self.best_dist = best_dist
+        self.best_loc = best_loc
         e_time = datetime.now()
         d_time = e_time - s_time
         if print_out:
             print(f"HOT SAX completed with run time {d_time}.")
-            print(f"Discord found at index {best_loc} with distance {best_distance}.")
+            print(f"Discord found at index {best_loc} with distance {best_dist}.")
         return best_dist, best_loc
 
     def init_norm(self):
