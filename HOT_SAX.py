@@ -6,8 +6,8 @@ import random
 
 class HOT_SAX:
     def __init__(self, ts):
-        self.alpha = 5  # default value
-        self.wsize = 8  # default value
+        self.alpha = int(5)  # default value
+        self.wsize = int(8)  # default value
         self.alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k']
         beta3 = [-0.43, 0.43]
         beta4 = [-0.67, 0.0, 0.67]
@@ -62,21 +62,21 @@ class HOT_SAX:
             ts = (ts - m)
         sax_ts = np.chararray(shape=(len(ts)))
         n = int(len(ts))
-        print(f"type {type(n)} ; value={n}")
         for i in range(n):
             sax_ts[i] = self.get_sax(ts[i])  # the same series but in SAX alphabet
         # counting words
         sax_wc = {}
-        for i in range(len(ts) - self.wsize):
-            word = "".join(sax_ts[i:i+self.wsize])
+        n -= self.wsize
+        for i in range(n):
+            word = "".join(sax_ts[i: (i+self.wsize)])
             if word in sax_wc:
                 sax_wc[word] += 1
             else:
                 sax_wc[word] = 1
         # list of dicts: index, word, and the word repeat count from above loop
         rows_l = []
-        for i in range(len(ts) - self.wsize):
-            word = "".join(sax_ts[i:i + self.wsize])
+        for i in range(n):
+            word = "".join(sax_ts[i: (i+self.wsize)])
             rows_l.append({'idx': i, 'word': word, 'count': sax_wc[word]})
         self.sax_array = pd.DataFrame(rows_l)
         self.sax_trie = {}
@@ -125,8 +125,8 @@ class HOT_SAX:
         return self.alphabet[self.alpha-1]
 
     def set_SAX_params(self, alpha, word_size):
-        self.alpha = alpha      # SAX vocabulary size
-        self.wsize = word_size  # SAX word size
+        self.alpha = int(alpha)      # SAX vocabulary size
+        self.wsize = int(word_size)  # SAX word size
         self.set_alphabeta()
 
     def set_alphabeta(self):
