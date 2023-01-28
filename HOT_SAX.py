@@ -53,15 +53,14 @@ class HOT_SAX:
         return best_dist, best_loc
 
     def init_norm(self):
-        ts = self.ts
         w = self.wsize
-        n = len(ts) - w
-        m = np.mean(ts)
-        s = np.std(ts)
+        n = len(self.ts) - w
+        m = np.mean(self.ts['value'].values)
+        s = np.std(self.ts['value'].values)
         if s > 0.0:
-            ts = (ts - m) / s
+            self.ts['values'] = (self.ts['values'] - m) / s
         else:
-            ts = (ts - m)
+            self.ts['values'] = (self.ts['values'] - m)
         self.ts['SAX'] = self.ts.apply(lambda r: self.get_sax(r.value), axis=1)
         # counting words
         sax_wc = {}
