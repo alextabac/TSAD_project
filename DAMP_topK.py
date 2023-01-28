@@ -8,7 +8,7 @@ from scipy.signal import find_peaks
 
 
 class DAMP_topK:
-    def __init__(self, enable_print):
+    def __init__(self, enable_print=True):
         self.enable_output = enable_print
         self.start_loc = 0
 
@@ -27,6 +27,9 @@ class DAMP_topK:
         best_so_far = -np.Inf
         bool_vec = np.ones(N, dtype=bool)
         lookahead = DAMP_topK.next_pow2(16 * subseq_len)
+        if self.enable_output:
+            print(f"Auto subsequence length set to {subseq_len}.")
+            print(f"Starting from index {curr_index}, with lookahead of {lookahead}")
         # Handle the prefix to get a relatively high best so far discord score
         # Prefix for top k
         for i in range(curr_index, curr_index + 16 * subseq_len + 1):
