@@ -2,6 +2,7 @@
 from datetime import datetime
 from MASS_V4 import MASS_V4
 from TSAD_UTIL import *
+import sys
 
 class DAMP_V2:
     def __init__(self, var_arg_in):
@@ -10,6 +11,9 @@ class DAMP_V2:
         self.enable_output = self.varargin["enable_output"]
         self.start_loc = 0
         self.subseq_len = 0
+        self.left_mp_result = None
+        self.position_found = None
+        self.score_found = None
 
     def DAMP_2_0(self, T, subseq_len, start_loc):
         s_time = datetime.now()
@@ -105,6 +109,9 @@ class DAMP_V2:
         # Get top discord
         discord_score = max(left_MP) - 0.0000001
         position = np.where(left_MP >= discord_score)[0]
+        self.left_mp_result = left_MP
+        self.position_found = position
+        self.score_found = discord_score
         e_time = datetime.now()
         d_time = e_time - s_time
         if self.enable_output:
@@ -143,7 +150,7 @@ class DAMP_V2:
             print("And more importantly, it can also result in imaginary numbers in the ")
             print("calculated Left Matrix Profile, from which we cannot get the correct ")
             print("score value and position of the top discord.** The program has been terminated. **")
-            quit()
+            sys.exit("This dataset contains constant and/or near constant regions.")
         if (start_loc/subsequence_len) < 4:
             print("WARNING: ")
             print("Location to start processing divided by SubsequenceLength is less than four.")
