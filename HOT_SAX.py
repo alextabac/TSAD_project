@@ -49,6 +49,7 @@ class HOT_SAX:
                     if dist < best_dist:
                         break
                     if dist < nearest_neighbor_dist:
+                        print(f"* updating nearest by dist at index {p} and {q}.")
                         nearest_neighbor_dist = dist
             if np.Inf > nearest_neighbor_dist > best_dist:
                 print("updating nearest !")
@@ -112,7 +113,9 @@ class HOT_SAX:
                 min_idx.append(i)
             else:
                 rest_idx.append(i)
+        print("pre shuffle: " + str(rest_idx[:16]))
         random.shuffle(rest_idx)
+        print("pst shuffle: " + str(rest_idx[:16]))
         self.idx = min_idx + rest_idx
 
     def get_mindist(self, p, q):
