@@ -6,13 +6,16 @@ from TSAD_UTIL import *
 
 
 class DAMP_topK:
-    def __init__(self, enable_print=True):
+    def __init__(self, enable_print=True, force_seq_len=None):
         self.enable_output = enable_print
+        self.force_seq_len = force_seq_len
 
     def DAMP_k(self, ts, discords_num):
         s_time = datetime.now()
         autocor, lags = xcorr(ts)
         subseq_len = int(find_max_peak_index(autocor[3010:4001], lags[3010:4001]))
+        if self.force_seq_len is not None:
+            subseq_len = self.force_seq_len
         half_seqlen = int(floor(0.5 * subseq_len))
         mass_v4 = MASS_V4(subseq_len)
         curr_index = 1001
