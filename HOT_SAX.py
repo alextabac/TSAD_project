@@ -63,7 +63,7 @@ class HOT_SAX:
         if print_out:
             print(f"HOT SAX completed with run time {d_time}.")
             print(f"Discord found at index {best_loc} with distance {best_dist}.")
-        return best_dist, best_loc
+        return best_dist, best_loc, d_time
 
     def init_norm(self):
         w = self.wsize
