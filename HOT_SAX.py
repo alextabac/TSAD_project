@@ -49,6 +49,7 @@ class HOT_SAX:
                     if dist < nearest_neighbor_dist:
                         nearest_neighbor_dist = dist
             if np.Inf > nearest_neighbor_dist > best_dist:
+                print(f"Updating best: p={p} ; best_dist={best_dist} ; nearest_neighbor_dist={nearest_neighbor_dist}")
                 best_dist = nearest_neighbor_dist
                 best_loc = p
             if print_out:
