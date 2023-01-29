@@ -49,10 +49,10 @@ class HOT_SAX:
                     if dist < best_dist:
                         break
                     if dist < nearest_neighbor_dist:
-                        print(f"* updating nearest by dist at index {p} and {q}.")
+                        # print(f"* updating nearest by dist at index {p} and {q}.")
                         nearest_neighbor_dist = dist
             if np.Inf > nearest_neighbor_dist > best_dist:
-                print("updating nearest !")
+                # print("updating nearest !")
                 best_dist = nearest_neighbor_dist
                 best_loc = p
             if print_out:
@@ -60,7 +60,7 @@ class HOT_SAX:
                 if cnt < 0:
                     j += 1
                     cnt = 500
-                    print(f"Completed {(j*cnt)} iterations out of {len(self.idx)}")
+                    # print(f"Completed {(j*cnt)} iterations out of {len(self.idx)}")
         self.best_dist = best_dist
         self.best_loc = best_loc
         e_time = datetime.now()
