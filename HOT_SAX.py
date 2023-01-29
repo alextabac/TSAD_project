@@ -141,6 +141,7 @@ class HOT_SAX:
                 r += self.sax_mindd[word1[i]][word2[i]] ** 2
             except Exception as e:
                 print(e)
+                print(f"alpha value = {self.alpha}")
                 print(f"word1={word1} with length {len(word1)}")
                 print(f"word2={word2} with length {len(word2)}")
                 print(f"index i = {i}")
