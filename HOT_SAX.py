@@ -52,7 +52,8 @@ class HOT_SAX:
                     if dist < best_dist:
                         break
             if np.Inf > nearest_neighbor_dist > best_dist:
-                # print("updating nearest !")
+                print(f"updating best: nearest_neighbor_dist={nearest_neighbor_dist} ; best_dist={best_dist}" +
+                      f"index {p}")
                 best_dist = nearest_neighbor_dist
                 best_loc = p
             if print_out:
