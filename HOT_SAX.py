@@ -36,8 +36,6 @@ class HOT_SAX:
         best_loc = -1
         cnt = 500
         j = 0
-        if print_out:
-            print("HOT SAX search starting now.")
         for p in self.idx:
             nearest_neighbor_dist = np.Inf
             word = self.sax_array.loc[p, 'word']
@@ -49,19 +47,13 @@ class HOT_SAX:
                     if dist < best_dist:
                         break
                     if dist < nearest_neighbor_dist:
-                        # if dist == 0.0:
-                        #     print(f"* updating nearest by dist with 0 value at index {p} and {q}.")
                         nearest_neighbor_dist = dist
             if np.Inf > nearest_neighbor_dist > best_dist:
-                print(f"updating best: nearest_neighbor_dist={nearest_neighbor_dist} ; best_dist={best_dist}" +
-                      f"index {p}")
                 best_dist = nearest_neighbor_dist
                 best_loc = p
             if print_out:
-                cnt -= 1
-                if cnt < 0:
-                    j += 1
-                    cnt = 500
+                j += 1
+                if j % 500 == 0:
                     print(f"Completed {(j*cnt)} iterations out of {len(self.idx)}")
         self.best_dist = best_dist
         self.best_loc = best_loc
