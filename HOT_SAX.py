@@ -73,14 +73,19 @@ class HOT_SAX:
     def init_norm(self):
         w = self.wsize
         n = len(self.ts) - w
+
+        # Z-norm the time series data
         m = np.mean(self.ts['value'].values)
         s = np.std(self.ts['value'].values)
         if s > 0.0:
             self.ts['value'] = (self.ts['value'] - m) / s
         else:
             self.ts['value'] = (self.ts['value'] - m)
+
+        # applying the SAX vocabulary on the normalized data points
         self.ts['SAX'] = self.ts.apply(lambda r: self.get_sax(r.value), axis=1)
-        # counting words
+
+        # building the SAX array
         sax_wc = {}
         for i in range(n):
             word = "".join(self.ts[i: (i+w)]['SAX'].values)
@@ -94,6 +99,8 @@ class HOT_SAX:
             word = "".join(self.ts[i: (i+w)]['SAX'].values)
             rows_l.append({'idx': i, 'word': word, 'count': sax_wc[word]})
         self.sax_array = pd.DataFrame(rows_l)
+
+        # building the SAX trie
         self.sax_trie = {}
         for i, row in self.sax_array.iterrows():
             cc = self.sax_trie
@@ -105,18 +112,25 @@ class HOT_SAX:
                 cc[row.word[-1]].append(row.idx)
             else:
                 cc[row.word[-1]] = [row.idx]
+
+        # arranging the indices - the outer loop heuristic
         min_count = np.min(self.sax_array['count'].values)
+        sec_min = np.Inf
+        for i, row in self.sax_array.iterrows():
+            if sec_min > row.count > min_count:
+                sec_min = row.count
         min_idx = []
+        sec_min_idx = []
         rest_idx = []
         for i, row in self.sax_array.iterrows():
-            if row['count'] == min_count:
+            if row.count == min_count:
                 min_idx.append(i)
+            elif row.count == sec_min:
+                sec_min_idx.append(i)
             else:
                 rest_idx.append(i)
-        print("pre shuffle: " + str(rest_idx[:16]))
         random.shuffle(rest_idx)
-        print("pst shuffle: " + str(rest_idx[:16]))
-        self.idx = min_idx + rest_idx
+        self.idx = min_idx + sec_min_idx + rest_idx
 
     def get_mindist(self, p, q):
         word1 = self.sax_array.loc[p, 'word']
