@@ -44,10 +44,10 @@ class HOT_SAX:
             for q in dlist:
                 if abs(p - q) >= self.wsize:
                     dist = self.get_mindist(p, q)
-                    if dist < nearest_neighbor_dist:
-                        nearest_neighbor_dist = dist
                     if dist < best_dist:
                         break
+                    if dist < nearest_neighbor_dist:
+                        nearest_neighbor_dist = dist
             if np.Inf > nearest_neighbor_dist > best_dist:
                 best_dist = nearest_neighbor_dist
                 best_loc = p
