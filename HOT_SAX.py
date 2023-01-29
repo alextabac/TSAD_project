@@ -117,15 +117,15 @@ class HOT_SAX:
         min_count = np.min(self.sax_array['count'].values)
         sec_min = np.Inf
         for i, row in self.sax_array.iterrows():
-            if sec_min > row.count > min_count:
-                sec_min = row.count
+            if sec_min > row['count'] > min_count:
+                sec_min = row['count']
         min_idx = []
         sec_min_idx = []
         rest_idx = []
         for i, row in self.sax_array.iterrows():
-            if row.count == min_count:
+            if row['count'] == min_count:
                 min_idx.append(i)
-            elif row.count == sec_min:
+            elif row['count'] == sec_min:
                 sec_min_idx.append(i)
             else:
                 rest_idx.append(i)
