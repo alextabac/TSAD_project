@@ -34,7 +34,6 @@ class HOT_SAX:
         s_time = datetime.now()
         best_dist = 0.0
         best_loc = -1
-        cnt = 500
         j = 0
         for p in self.idx:
             nearest_neighbor_dist = np.Inf
@@ -53,8 +52,8 @@ class HOT_SAX:
                 best_loc = p
             if print_out:
                 j += 1
-                if j % 500 == 0:
-                    print(f"Completed {(j*cnt)} iterations out of {len(self.idx)}")
+                if j % 1000 == 0:
+                    print(f"Completed {j} iterations out of {len(self.idx)}")
         self.best_dist = best_dist
         self.best_loc = best_loc
         e_time = datetime.now()
