@@ -50,7 +50,7 @@ class HOT_SAX:
                         nearest_neighbor_dist = dist
                     if dist < best_dist:
                         break
-            if np.Inf > nearest_neighbor_dist > best_dist:
+            if nearest_neighbor_dist > best_dist:
                 best_dist = nearest_neighbor_dist
                 best_loc = p
             if print_out:
