@@ -18,7 +18,7 @@ class HOT_SAX:
         beta8 = [-1.15, -0.67, -0.32, 0.0, 0.32, 0.67, 1.15]
         beta9 = [-1.22, -0.76, -0.43, -0.14, 0.14, 0.43, 0.76, 1.22]
         beta10 = [-1.28, -0.84, -0.52, -0.25, 0.0, 0.25, 0.52, 0.84, 1.28]
-        self.betas = [None, None, beta3, beta4, beta5, beta6, beta7, beta8, beta9, beta10]
+        self.betas = [None, None, None, beta3, beta4, beta5, beta6, beta7, beta8, beta9, beta10]
         self.beta = None  # the specific beta from betas above
         self.brp = None  # the break points
         self.sax_array = None
