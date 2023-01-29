@@ -119,7 +119,7 @@ class DAMP_V2:
             print(f"DAMP_V2 run time {d_time}")
             print(f"Pruning Rate: {PR}")
             print(f"Predicted discord score/position: {discord_score} / {position}")
-        return discord_score, position, left_MP
+        return discord_score, position, left_MP, d_time
 
     def initial_checks(self, T, subsequence_len, start_loc):
         if self.enable_output:

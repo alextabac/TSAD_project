@@ -145,5 +145,5 @@ class DAMP_topK:
             discord_start = max(1, loc - half_seqlen) - 1
             discord_end = max(half_seqlen + 1, loc + half_seqlen) + 1
             left_MP_copy[discord_start: discord_end] = -np.Inf
-        return scores, positions, left_MP
+        return scores, positions, left_MP, d_time
 
