@@ -2,6 +2,7 @@
 #  the function xcorr2 was copied from https://github.com/colizoli/xcorr_python/blob/master/xcorr.py
 
 import numpy as np
+import pandas as pd
 from scipy import signal
 
 
@@ -46,3 +47,16 @@ def next_pow2(x):
     # 1 if x == 0 else 2 ** (x - 1).bit_length()  # but no need to worry about x==0
     return 2 ** (x - 1).bit_length()
 
+
+def get_hotsax_appearances_matrix(hotsax_obj):
+    rows_l = []
+    for a in range(3, 11):
+        for w in range(3, 33):
+            hotsax_obj.set_SAX_params(a, w)
+            hotsax_obj.init_norm()
+            d = {'alpha': a, 'word': w}
+            for i in range(1, 33):
+                i_s = 'appearing_' + str(i) + '_times'
+                d[i_s] = len(np.where(np.array(hotsax_obj.sax_array['count'].values) == i)[0])
+            rows_l.append(d)
+    return pd.DataFrame(rows_l)
