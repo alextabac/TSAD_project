@@ -48,7 +48,9 @@ class HOT_SAX:
                     dist = self.get_mindist(p, q)
                     if dist < nearest_neighbor_dist:
                         nearest_neighbor_dist = dist
+                        print(f"neigh-dist: {dist}")
                     if dist < best_dist:
+                        print(f"break-dist: {dist}")
                         break
             if np.Inf > nearest_neighbor_dist > best_dist:
                 best_dist = nearest_neighbor_dist
