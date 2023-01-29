@@ -10,6 +10,7 @@ class HOT_SAX:
         self.alpha = int(5)  # default value
         self.wsize = int(8)  # default value
         self.alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k']
+        beta2 = [0.0]
         beta3 = [-0.43, 0.43]
         beta4 = [-0.67, 0.0, 0.67]
         beta5 = [-0.84, -0.25, 0.25, 0.84]
@@ -18,7 +19,7 @@ class HOT_SAX:
         beta8 = [-1.15, -0.67, -0.32, 0.0, 0.32, 0.67, 1.15]
         beta9 = [-1.22, -0.76, -0.43, -0.14, 0.14, 0.43, 0.76, 1.22]
         beta10 = [-1.28, -0.84, -0.52, -0.25, 0.0, 0.25, 0.52, 0.84, 1.28]
-        self.betas = [None, None, None, beta3, beta4, beta5, beta6, beta7, beta8, beta9, beta10]
+        self.betas = [None, None, beta2, beta3, beta4, beta5, beta6, beta7, beta8, beta9, beta10]
         self.beta = None  # the specific beta from betas above
         self.brp = None  # the break points
         self.sax_array = None
@@ -43,10 +44,10 @@ class HOT_SAX:
             for q in dlist:
                 if abs(p - q) >= self.wsize:
                     dist = self.get_mindist(p, q)
-                    if dist < best_dist:
-                        break
                     if dist < nearest_neighbor_dist:
                         nearest_neighbor_dist = dist
+                    if dist < best_dist:
+                        break
             if np.Inf > nearest_neighbor_dist > best_dist:
                 best_dist = nearest_neighbor_dist
                 best_loc = p
