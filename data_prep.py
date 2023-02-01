@@ -2,6 +2,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from math import floor
+import io
 
 class Data_Preprocess:
     """
@@ -31,14 +32,21 @@ class Data_Preprocess:
         else:
             self.agg_str = str(aggregate_amount) + aggregate_type
 
-    def load_data(self, filename, delimiter):
+    def load_data(self, filename, delimiter, load_all=True):
         """
         Load a text data file into memory and prepare column names, and the aggregation from raw if defined.
+        :param load_all: to read all lines from file or specific series per self.feature_n.
         :param filename: including path if in other path
         :param delimiter: the delimiter character, usually a '\t' or ','
         :return:
         """
-        df = pd.read_csv(filename, delimiter=delimiter)
+        if load_all or self.feature_n is None:
+            df = pd.read_csv(filename, delimiter=delimiter)
+        else:
+            ser = 'Feature' + str(self.feature_n)
+            with open(filename) as f:
+                text = "\n".join([line for line in f if ser in line])
+            df = pd.read_csv(io.StringIO(text),  delimiter=delimiter)
         print(f"File loaded with {len(df)} rows.")
         all_cols = True
         needed_cols = ['RUN_START_DATE', 'Equip', 'Feature', 'PREP_VALUE']
@@ -85,13 +93,7 @@ class Data_Preprocess:
         self.df['key'] = self.df['Equip'] + "_" + self.df['series']
         uniq_keys = self.df['key'].unique()
         dfs = []
-        if self.feature_n is not None:
-            feat = 'Feature' + str(self.feature_n)
-        else:
-            feat = ''
         for ukey in uniq_keys:
-            if self.feature_n is not None and feat not in ukey:
-                continue
             print(f"Preparing key series {ukey} ...")
             ddf = self.df[self.df['key'] == ukey]
             ddf = ddf.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
