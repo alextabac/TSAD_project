@@ -58,6 +58,7 @@ class Data_Preprocess:
         all_cols = True
         needed_cols = ['RUN_START_DATE', 'Equip', 'Feature', 'PREP_VALUE']
         cols = list(df.columns)
+        print(f"DF columns: {cols}")
         miss_cols = []
         for col in needed_cols:
             if col not in cols:
