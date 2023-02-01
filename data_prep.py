@@ -49,7 +49,12 @@ class Data_Preprocess:
             with open(filename) as f:
                 text = "\n".join([line for line in f if ser in line])
             df = pd.read_csv(io.StringIO(text),  delimiter=delimiter)
-        print(f"File {filename} loaded with {len(df)} rows.")
+        fns = filename.rsplit("\\", 1)
+        if len(fns) == 1:
+            fname_ = fns
+        else:
+            fname_ = fns[1]
+        print(f"File {fname_} loaded with {len(df)} rows.")
         all_cols = True
         needed_cols = ['RUN_START_DATE', 'Equip', 'Feature', 'PREP_VALUE']
         cols = list(df.columns)
@@ -95,8 +100,13 @@ class Data_Preprocess:
         self.df['key'] = self.df['Equip'] + "_" + self.df['series']
         uniq_keys = self.df['key'].unique()
         dfs = []
+        fns = self.fname.rsplit("\\", 1)
+        if len(fns) == 1:
+            fname_ = fns
+        else:
+            fname_ = fns[1]
         for ukey in uniq_keys:
-            print(f"Preparing key series {ukey} ...")
+            print(f"Preparing key series {ukey} from file {fname_}...")
             ddf = self.df[self.df['key'] == ukey]
             ddf = ddf.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
             ddf = ddf.reset_index(drop=True)
