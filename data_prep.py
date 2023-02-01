@@ -108,8 +108,8 @@ class Data_Preprocess:
         else:
             fname_ = fns[1]
         for ukey in uniq_keys:
-            print(f"Preparing key series {ukey} from file {fname_}...")
             ddf = self.df[self.df['key'] == ukey]
+            print(f"Preparing key series {ukey} from file {fname_} with {len(ddf)} rows...")
             ddf = ddf.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
             ddf = ddf.reset_index(drop=True)
             ddf = self.znorm_df(ddf)
