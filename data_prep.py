@@ -47,7 +47,7 @@ class Data_Preprocess:
             with open(filename) as f:
                 text = "\n".join([line for line in f if ser in line])
             df = pd.read_csv(io.StringIO(text),  delimiter=delimiter)
-        print(f"File loaded with {len(df)} rows.")
+        print(f"File {filename} loaded with {len(df)} rows.")
         all_cols = True
         needed_cols = ['RUN_START_DATE', 'Equip', 'Feature', 'PREP_VALUE']
         cols = list(df.columns)
