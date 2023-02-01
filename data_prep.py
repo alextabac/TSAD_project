@@ -47,7 +47,9 @@ class Data_Preprocess:
         else:
             ser = 'Feature' + str(self.feature_n)
             with open(filename) as f:
+                headers = f.readline() + "\n"
                 text = "\n".join([line for line in f if ser in line])
+                text = headers + text
             df = pd.read_csv(io.StringIO(text),  delimiter=delimiter)
         fns = filename.rsplit("\\", 1)
         if len(fns) == 1:
@@ -59,6 +61,7 @@ class Data_Preprocess:
         needed_cols = ['RUN_START_DATE', 'Equip', 'Feature', 'PREP_VALUE']
         cols = list(df.columns)
         print(f"DF columns: {cols}")
+        quit()
         miss_cols = []
         for col in needed_cols:
             if col not in cols:
