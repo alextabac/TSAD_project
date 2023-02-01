@@ -18,6 +18,7 @@ class Data_Preprocess:
         """
         self.df = None
         self.dfs = []
+        self.fname = None
         self.feature_n = feature_num
         self.th_hours = threshold_hours
         self.agg_type = aggregate_type
@@ -40,6 +41,7 @@ class Data_Preprocess:
         :param delimiter: the delimiter character, usually a '\t' or ','
         :return:
         """
+        self.fname = filename
         if load_all or self.feature_n is None:
             df = pd.read_csv(filename, delimiter=delimiter)
         else:
