@@ -52,6 +52,7 @@ class HOT_SAX:
             distances.append(d)
             locations.append(l)
             runtimes.append(t)
+            print(f"Progressive search completed index {i} out of {end_index - 1}")
             if print_out:
                 print(f"Progressive search completed index {i} out of {end_index-1}")
         return distances, locations, runtimes
