@@ -1,4 +1,12 @@
 
+"""
+Usage:
+init object providing time series array/series.
+call set_SAX_params function to change parameters (if needed other than default).
+call init_norm function to init the HOT SAAX data structures.
+Lastly, call search or progressive_search to perform the search and get the results.
+"""
+
 import numpy as np
 import pandas as pd
 import random
@@ -7,7 +15,7 @@ from datetime import datetime
 
 class HOT_SAX:
     def __init__(self, ts):
-        self.alpha = int(5)  # default value
+        self.alpha = int(7)  # default value
         self.wsize = int(8)  # default value
         self.alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k']
         beta2 = [0.0]
