@@ -31,31 +31,51 @@ class HOT_SAX:
         self.best_dist = 0.0
         self.best_loc = -1
 
-    def search(self, print_out=False):
+    def progressive_search(self, start_index=1000, print_out=False):
+        n = len(self.ts)
+        w = self.wsize
+        start_index = min(n - w, start_index)
+        distances = []
+        locations = []
+        runtimes = []
+        for i in range(start_index, n - w + 1):
+            d, l, t = self.search(print_out, i)
+            distances.append(d)
+            locations.append(l)
+            runtimes.append(t)
+        return distances, locations, runtimes
+
+    def search(self, print_out=False, limit_index=np.Inf):
+        """
+        Searching the discord.
+        :param print_out:
+        :param limit_index: limit on index, to limit the search up to the given limit, or all if infinity
+        :return:
+        """
         s_time = datetime.now()
         best_dist = 0.0
         best_loc = -1
         j = 0
         for p in self.idx:
-            nearest_neighbor_dist = np.Inf
-            word = self.sax_array.loc[p, 'word']
-            i_list = self.get_trie_list(word)
-            dlist = i_list + self.idx
-            for q in dlist:
-                if abs(p - q) >= self.wsize:
-                    dist = self.get_mindist(p, q)
-                    if dist < best_dist:
-                        break
-                    if dist < nearest_neighbor_dist:
-                        nearest_neighbor_dist = dist
-            if np.Inf > nearest_neighbor_dist > best_dist:
-                # print(f"Updating best: p={p} ; best_dist={best_dist} ; nearest_neighbor_dist={nearest_neighbor_dist}")
-                best_dist = nearest_neighbor_dist
-                best_loc = p
-            if print_out:
-                j += 1
-                if j % 1000 == 0:
-                    print(f"Completed {j} iterations out of {len(self.idx)}")
+            if p < limit_index:
+                nearest_neighbor_dist = np.Inf
+                word = self.sax_array.loc[p, 'word']
+                i_list = self.get_trie_list(word)
+                dlist = i_list + self.idx
+                for q in dlist:
+                    if q < limit_index and abs(p - q) >= self.wsize:
+                        dist = self.get_mindist(p, q)
+                        if dist < best_dist:
+                            break
+                        if dist < nearest_neighbor_dist:
+                            nearest_neighbor_dist = dist
+                if np.Inf > nearest_neighbor_dist > best_dist:
+                    best_dist = nearest_neighbor_dist
+                    best_loc = p
+                if print_out:
+                    j += 1
+                    if j % 1000 == 0:
+                        print(f"Completed {j} iterations out of {len(self.idx)}")
         self.best_dist = best_dist
         self.best_loc = best_loc
         e_time = datetime.now()
