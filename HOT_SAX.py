@@ -43,14 +43,17 @@ class HOT_SAX:
         n = len(self.ts)
         w = self.wsize
         start_index = min(n - w, start_index)
+        end_index = n - w + 1
         distances = []
         locations = []
         runtimes = []
-        for i in range(start_index, n - w + 1):
-            d, l, t = self.search(print_out, i)
+        for i in range(start_index, end_index):
+            d, l, t = self.search(print_out=print_out, limit_index=i)
             distances.append(d)
             locations.append(l)
             runtimes.append(t)
+            if print_out:
+                print(f"Progressive search completed index {i} out of {end_index-1}")
         return distances, locations, runtimes
 
     def search(self, print_out=False, limit_index=np.Inf):
