@@ -39,7 +39,7 @@ class HOT_SAX:
         self.best_dist = 0.0
         self.best_loc = -1
 
-    def progressive_search(self, start_index=1000, step_size=1000, print_out=False):
+    def progressive_search(self, start_index=1000, step_size=1000, print_out=False, deep_print_out=False):
         n = len(self.ts)
         w = self.wsize
         start_index = min(n - w, start_index)
@@ -48,11 +48,10 @@ class HOT_SAX:
         locations = []
         runtimes = []
         for i in range(start_index, end_index, step_size):
-            d, l, t = self.search(print_out=print_out, limit_index=i)
+            d, l, t = self.search(print_out=deep_print_out, limit_index=i)
             distances.append(d)
             locations.append(l)
             runtimes.append(t)
-            print(f"Progressive search completed index {i} out of {end_index - 1}")
             if print_out:
                 print(f"Progressive search completed index {i} out of {end_index - 1}")
         return distances, locations, runtimes
