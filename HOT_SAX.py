@@ -67,26 +67,33 @@ class HOT_SAX:
         best_dist = 0.0
         best_loc = -1
         j = 0
-        for p in self.idx:
-            if p < limit_index:
-                nearest_neighbor_dist = np.Inf
-                word = self.sax_array.loc[p, 'word']
-                i_list = self.get_trie_list(word)
-                dlist = i_list + self.idx
-                for q in dlist:
-                    if q < limit_index and abs(p - q) >= self.wsize:
-                        dist = self.get_mindist(p, q)
-                        if dist < best_dist:
-                            break
-                        if dist < nearest_neighbor_dist:
-                            nearest_neighbor_dist = dist
-                if np.Inf > nearest_neighbor_dist > best_dist:
-                    best_dist = nearest_neighbor_dist
-                    best_loc = p
-                if print_out:
-                    j += 1
-                    if j % 1000 == 0:
-                        print(f"Completed {j} iterations out of {len(self.idx)}")
+        if limit_index < np.Inf:
+            idx_ = [i for i in self.idx if i < limit_index]
+        else:
+            idx_ = self.idx
+        for p in idx_:
+            nearest_neighbor_dist = np.Inf
+            word = self.sax_array.loc[p, 'word']
+            i_list = self.get_trie_list(word)
+            if limit_index < np.Inf:
+                i_list_ = [i for i in i_list if i < limit_index]
+            else:
+                i_list_ = i_list
+            dlist_ = i_list_ + idx_
+            for q in dlist_:
+                if q < limit_index and abs(p - q) >= self.wsize:
+                    dist = self.get_mindist(p, q)
+                    if dist < best_dist:
+                        break
+                    if dist < nearest_neighbor_dist:
+                        nearest_neighbor_dist = dist
+            if np.Inf > nearest_neighbor_dist > best_dist:
+                best_dist = nearest_neighbor_dist
+                best_loc = p
+            if print_out:
+                j += 1
+                if j % 1000 == 0:
+                    print(f"Completed {j} iterations out of {len(idx_)}")
         self.best_dist = best_dist
         self.best_loc = best_loc
         e_time = datetime.now()
