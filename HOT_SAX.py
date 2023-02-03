@@ -51,6 +51,7 @@ class HOT_SAX:
         idx = []
         i = start_index
         while i <= end_index:
+            print("curr replace idx: " + str(idx))
             d, l, t = self.search(print_out=deep_print_out, limit_index=i, replace_indices=idx)
             distances.append(d)
             locations.append(l)
