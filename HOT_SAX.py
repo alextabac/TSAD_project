@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import random
 from datetime import datetime
-
+from TSAD_UTIL import *
 
 class HOT_SAX:
     def __init__(self, ts):
@@ -39,7 +39,8 @@ class HOT_SAX:
         self.best_dist = 0.0
         self.best_loc = -1
 
-    def progressive_search(self, start_index=1000, step_size=1000, print_out=False, deep_print_out=False):
+    def progressive_search(self, start_index=1000, step_size=1000, replace_index=False,
+                           print_out=False, deep_print_out=False):
         n = len(self.ts)
         w = self.wsize
         start_index = min(n - w, start_index)
@@ -47,12 +48,15 @@ class HOT_SAX:
         distances = []
         locations = []
         runtimes = []
+        idx = []
         i = start_index
         while i <= end_index:
-            d, l, t = self.search(print_out=deep_print_out, limit_index=i)
+            d, l, t = self.search(print_out=deep_print_out, limit_index=i, replace_indices=idx)
             distances.append(d)
             locations.append(l)
             runtimes.append(t)
+            if replace_index and l not in idx:
+                idx.append(l)
             if print_out:
                 print(f"Progressive search completed index {i} out of {end_index - 1}")
             if i == end_index:
@@ -61,9 +65,10 @@ class HOT_SAX:
             i = min(i, end_index)
         return distances, locations, runtimes
 
-    def search(self, print_out=False, limit_index=np.Inf):
+    def search(self, print_out=False, limit_index=np.Inf, replace_indices=[]):
         """
         Searching the discord.
+        :param replace_indices: ignore the given indices, if any
         :param print_out:
         :param limit_index: limit on index, to limit the search up to the given limit, or all if infinity
         :return:
@@ -72,18 +77,13 @@ class HOT_SAX:
         best_dist = 0.0
         best_loc = -1
         j = 0
-        if limit_index < np.Inf:
-            idx_ = [i for i in self.idx if i < limit_index]
-        else:
-            idx_ = self.idx
+        # keeping only relevant indices, below the limit and not in given replace list
+        idx_ = get_clear_indices(self.idx, replace_indices, self.wsize, limit_index)
         for p in idx_:
             nearest_neighbor_dist = np.Inf
             word = self.sax_array.loc[p, 'word']
             i_list = self.get_trie_list(word)
-            if limit_index < np.Inf:
-                i_list_ = [i for i in i_list if i < limit_index]
-            else:
-                i_list_ = i_list
+            i_list_ = get_clear_indices(i_list, replace_indices, self.wsize, limit_index)
             dlist_ = i_list_ + idx_
             for q in dlist_:
                 if q < limit_index and abs(p - q) >= self.wsize:

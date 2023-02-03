@@ -6,6 +6,42 @@ import pandas as pd
 from scipy import signal
 
 
+def get_clear_indices(idx, replace_indices, word_size, limit=np.Inf):
+    if len(replace_indices) == 0:
+        if limit < np.Inf:
+            fl = [i for i in idx if i < limit]
+            return fl
+        else:
+            return idx
+    replace_indices.sort()
+    ss = [(max(0, i - word_size), 1) for i in replace_indices]  # 1 == start
+    se = [(i + word_size, 2) for i in replace_indices]  # 2 == end
+    sl = ss + se
+    sl.sort(key=lambda x: x[0])
+    ll = []
+    o = 0
+    s = sl[0][0]
+    for e in sl:
+        if e[1] == 1:
+            o += 1
+            if o == 1:
+                s = e[0]
+        elif e[1] == 2:
+            o -= 1
+        if o == 0:
+            e = e[0]
+            ll.append((s, e))
+    fl = []
+    j = 0
+    n = len(ll) - 1
+    for i in idx:
+        while j < n and i > ll[j][1]:
+            j += 1
+        if i < ll[j][0] or i >= ll[j][1]:
+            if i < limit:
+                fl.append(i)
+    return fl
+
 def contains_constant_regions(ts, subsequence_len):
     # Assuming T has reset index
     bool_vec = False
