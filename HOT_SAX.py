@@ -16,6 +16,9 @@ import numpy as np
 import pandas as pd
 import random
 from datetime import datetime
+from importlib import reload
+import TSAD_UTIL
+reload(TSAD_UTIL)
 from TSAD_UTIL import *
 
 class HOT_SAX:
@@ -56,13 +59,13 @@ class HOT_SAX:
         idx = []
         i = start_index
         while i <= end_index:
-            print("curr replace idx: " + str(idx))
             d, l, t = self.search(print_out=deep_print_out, limit_index=i, replace_indices=idx)
             distances.append(d)
             locations.append(l)
             runtimes.append(t)
             if replace_index and l not in idx:
                 idx.append(l)
+            # print(f"iteration {i} curr replace idx: {idx}")
             if print_out:
                 print(f"Progressive search completed index {i} out of {end_index - 1}")
             if i == end_index:
@@ -85,10 +88,6 @@ class HOT_SAX:
         j = 0
         # keeping only relevant indices, below the limit and not in given replace list
         idx_ = get_clear_indices(self.idx, replace_indices, self.wsize, limit_index)
-        if 3000 > limit_index > 4000:
-            print("----------------------------------------------")
-            print("")
-            print("----------------------------------------------")
         for p in idx_:
             nearest_neighbor_dist = np.Inf
             word = self.sax_array.loc[p, 'word']
