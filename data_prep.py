@@ -4,6 +4,7 @@ import pandas as pd
 from math import floor
 import io
 
+
 class Data_Preprocess:
     """
     Raw data is aggregated over specified time window (or not if not defined,
@@ -161,3 +162,7 @@ class Data_Preprocess:
             df[val_name] = df[tmp_name] - m
         df = df.drop([tmp_name], axis=1)
         return df
+
+
+if __name__ == '__main__':
+    pass

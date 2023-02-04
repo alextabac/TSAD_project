@@ -96,3 +96,7 @@ def get_hotsax_appearances_matrix(hotsax_obj):
                 d[i_s] = len(np.where(np.array(hotsax_obj.sax_array['count'].values) == i)[0])
             rows_l.append(d)
     return pd.DataFrame(rows_l)
+
+
+if __name__ == '__main__':
+    pass

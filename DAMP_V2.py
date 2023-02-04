@@ -1,8 +1,13 @@
 
+import sys
+from os import path
+fpath = path.dirname(path.abspath(__file__))
+if fpath not in sys.path:
+    sys.path.append(fpath)
 from datetime import datetime
 from MASS_V4 import MASS_V4
 from TSAD_UTIL import *
-import sys
+
 
 class DAMP_V2:
     def __init__(self, var_arg_in):
@@ -178,3 +183,6 @@ class DAMP_V2:
             print(f"For the current input, we recommend setting the subsequence length to {subsequence_len}")
             print("------------------------------------------\n\n")
 
+
+if __name__ == '__main__':
+    pass

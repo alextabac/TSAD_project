@@ -1,4 +1,9 @@
 
+import sys
+from os import path
+fpath = path.dirname(path.abspath(__file__))
+if fpath not in sys.path:
+    sys.path.append(fpath)
 from math import floor
 from datetime import datetime
 from MASS_V4 import MASS_V4
@@ -147,3 +152,6 @@ class DAMP_topK:
             left_MP_copy[discord_start: discord_end] = -np.Inf
         return scores, positions, left_MP, d_time
 
+
+if __name__ == '__main__':
+    pass

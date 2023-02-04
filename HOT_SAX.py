@@ -7,6 +7,11 @@ call init_norm function to init the HOT SAAX data structures.
 Lastly, call search or progressive_search to perform the search and get the results.
 """
 
+import sys
+from os import path
+fpath = path.dirname(path.abspath(__file__))
+if fpath not in sys.path:
+    sys.path.append(fpath)
 import numpy as np
 import pandas as pd
 import random
@@ -80,6 +85,10 @@ class HOT_SAX:
         j = 0
         # keeping only relevant indices, below the limit and not in given replace list
         idx_ = get_clear_indices(self.idx, replace_indices, self.wsize, limit_index)
+        if 3000 > limit_index > 4000:
+            print("----------------------------------------------")
+            print("")
+            print("----------------------------------------------")
         for p in idx_:
             nearest_neighbor_dist = np.Inf
             word = self.sax_array.loc[p, 'word']
@@ -221,3 +230,7 @@ class HOT_SAX:
                     mdd[self.alphabet[i]] = {}
                 mdd[self.alphabet[i]][self.alphabet[j]] = mind_mat[i][j]
         self.sax_mindd = mdd
+
+
+if __name__ == '__main__':
+    pass
