@@ -56,6 +56,7 @@ class HOT_SAX:
         distances = []
         locations = []
         runtimes = []
+        windows = []
         idx = []
         i = start_index
         while i <= end_index:
@@ -63,6 +64,7 @@ class HOT_SAX:
             distances.append(d)
             locations.append(l)
             runtimes.append(t)
+            windows.append(i)
             if replace_index and l not in idx:
                 idx.append(l)
             # print(f"iteration {i} curr replace idx: {idx}")
@@ -72,7 +74,7 @@ class HOT_SAX:
                 break
             i += step_size
             i = min(i, end_index)
-        return distances, locations, runtimes
+        return distances, locations, windows, runtimes
 
     def search(self, print_out=False, limit_index=np.Inf, replace_indices=[]):
         """
