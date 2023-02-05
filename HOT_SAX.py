@@ -47,7 +47,7 @@ class HOT_SAX:
         self.best_dist = 0.0
         self.best_loc = -1
 
-    def progressive_search(self, start_index=1000, step_size=1000, replace_index=False,
+    def progressive_search(self, start_index=2000, step_size=1000, replace_index=False,
                            print_out=False, deep_print_out=False):
         n = len(self.ts)
         w = self.wsize
