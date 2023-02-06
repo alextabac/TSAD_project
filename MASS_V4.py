@@ -18,7 +18,7 @@ import numpy as np
 import scipy.stats as stats
 from math import floor, sqrt
 from scipy.fft import dct
-
+from datetime import datetime
 
 class MASS_V4:
     def __init__(self, q_size, k_size=0):
@@ -38,18 +38,19 @@ class MASS_V4:
         :param k: should greater than or equals to floor((3m+1)/2)
         :return:
         """
+        st1 = datetime.now()
         n = len(T)
         m = len(Q)
         Q = self.zNorm(Q)
         dist = np.array([])
         k = self.k
         batch = self.get_batch_size(k, m)
-        for j in range(0, n - m + 1, batch - m + 1):
+        for j in range(0, n - m + 2, batch - m + 1):
             right = j + batch  # -1 for Matlab code due to last index is included in slice contrary to Python
             if right >= n:
                 right = n
             dot_p = self.dct_dot_product(T[j:right], Q)
-            sigmaT = self.movstd(T[j:right], m)  # in Matlab they use w=1 such that normalized N and not N-1
+            sigmaT = self.movstd(T[j:right], m-1)  # in Matlab they use w=1 such that normalized N and not N-1
             # sigmaT[np.isnan(sigmaT)] = 1.0  # consider making NaN values to 1.0, if appear any
             d = np.sqrt(2.0 * (m - np.divide(dot_p, sigmaT)))  # sigmaT[m:end] in Matlab
             dist = np.concatenate((dist, d))
