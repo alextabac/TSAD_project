@@ -18,7 +18,6 @@ import numpy as np
 import scipy.stats as stats
 from math import floor, sqrt
 from scipy.fft import dct
-from datetime import datetime
 
 class MASS_V4:
     def __init__(self, q_size, k_size=0):
@@ -38,7 +37,6 @@ class MASS_V4:
         :param k: should greater than or equals to floor((3m+1)/2)
         :return:
         """
-        st1 = datetime.now()
         n = len(T)
         m = len(Q)
         Q = self.zNorm(Q)
@@ -52,7 +50,8 @@ class MASS_V4:
             dot_p = self.dct_dot_product(T[j:right], Q)
             sigmaT = self.movstd(T[j:right], m-1)  # in Matlab they use w=1 such that normalized N and not N-1
             # sigmaT[np.isnan(sigmaT)] = 1.0  # consider making NaN values to 1.0, if appear any
-            d = np.sqrt(2.0 * (m - np.divide(dot_p, sigmaT)))  # sigmaT[m:end] in Matlab
+            v = m - np.divide(dot_p, sigmaT)  # sigmaT here is equivalent to sigmaT[m:end] in Matlab
+            d = np.sqrt(2.0 * v)
             dist = np.concatenate((dist, d))
         return dist
 
@@ -82,10 +81,11 @@ class MASS_V4:
         dct_product = np.multiply(xc, yc)
         dct_product.resize(N + 1)
         dct_product[N] = 0
-        dct_product[0] *= sqrt(2)
+        # dct_product[0] *= sqrt(2)  # mark out versus matlab implementation by author
         dot_p = dct(dct_product, type=1, norm="ortho")
-        dot_p[0] *= 2
-        dot_p = sqrt(2 * N) * dot_p[si: si + n - m + 1]
+        # dot_p[0] *= 2  # mark out versus matlab implementation by author
+        # dot_p = sqrt(2 * N) * dot_p[si: si + n - m + 1]
+        dot_p = dot_p[si: si + n - m + 1]  # the sqrt(2N) is mark out versus matlab implementation by author
         return dot_p
 
     def dct_padding(self, x, y):
