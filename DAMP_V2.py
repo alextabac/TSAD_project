@@ -38,7 +38,7 @@ class DAMP_V2:
         best_so_far = -np.Inf
         bool_vec = np.ones(N, dtype=bool)
         st1 = datetime.now()
-        print("starting treat for indices up to starting locaiton.")
+        # print("starting treat for indices up to starting locaiton.")
         for i in range(start_loc, (start_loc + lookahead)):
             # Skip the current iteration if the corresponding boolean value
             if not bool_vec[i]:
@@ -59,16 +59,16 @@ class DAMP_V2:
                     dp_index_less_than_BSF = np.where(distance_profile < best_so_far)[0]  # get the array in tuple
                     ts_index_less_than_BSF = dp_index_less_than_BSF + start_of_mass
                     bool_vec[ts_index_less_than_BSF] = False  # prune these indices
-        et1 = datetime.now()
-        print(f"Starting the actual search, so far delta time: {(et1-st1)}")
-        j = 0
-        st1 = datetime.now()
+        # et1 = datetime.now()
+        # print(f"Starting the actual search, so far delta time: {(et1-st1)}")
+        # j = 0
+        # st1 = datetime.now()
         for i in range(start_loc + lookahead, N - subseq_len):
-            j += 1
-            if j % 500 == 0:
-                et1 = datetime.now()
-                print(f"starting search iteration {i} , delta time: {et1-st1}; counted so far {j} cycles.")
-                st1 = datetime.now()
+            # j += 1
+            # if j % 500 == 0:
+            #     et1 = datetime.now()
+            #     print(f"starting search iteration {i} , delta time: {et1-st1}; counted so far {j} cycles.")
+            #     st1 = datetime.now()
             if not bool_vec[i]:
                 # We subtract a very small number here to avoid the pruned
                 # subsequence having the same discord score as the real discord
