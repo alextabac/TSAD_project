@@ -9,6 +9,8 @@ from importlib import reload
 import MASS_V4
 reload(MASS_V4)
 from MASS_V4 import MASS_V4
+import TSAD_UTIL
+reload(TSAD_UTIL)
 from TSAD_UTIL import *
 
 
@@ -22,6 +24,27 @@ class DAMP_V2:
         self.left_mp_result = None
         self.position_found = None
         self.score_found = None
+
+    def progressive_damp(self, T, subseq_len, start_loc=2000, step_size=1000, verbose=False):
+        scores = []
+        poses = []
+        windows = []
+        dtimes = []
+        end_index = len(T) - subseq_len + 1
+        i = start_loc
+        while i <= end_index:
+            discord_score, position, left_MP, d_time = self.DAMP_2_0(T[:i], subseq_len, 1000)
+            scores.append(discord_score)
+            poses.append(position)
+            windows.append(i)
+            dtimes.append(d_time)
+            if verbose:
+                print(f"completed step {i} out of {end_index}; run-time {d_time}; discord: {position}")
+            if i == end_index:
+                break
+            i += step_size
+            i = min(i, end_index)
+        return scores, poses, windows, dtimes
 
     def DAMP_2_0(self, T, subseq_len, start_loc):
         s_time = datetime.now()
@@ -37,7 +60,7 @@ class DAMP_V2:
         left_MP = np.zeros(N)
         best_so_far = -np.Inf
         bool_vec = np.ones(N, dtype=bool)
-        st1 = datetime.now()
+        # st1 = datetime.now()
         # print("starting treat for indices up to starting locaiton.")
         for i in range(start_loc, (start_loc + lookahead)):
             # Skip the current iteration if the corresponding boolean value
@@ -47,7 +70,7 @@ class DAMP_V2:
             if (i + subseq_len) >= N:
                 break
             query = T[i:(i+subseq_len)]
-            left_MP[i] = min(mass_v4.dist_prof(T[:i], query))
+            left_MP[i] = min(mass_v4.dist_prof(T[:i+1], query))
             best_so_far = max(left_MP)
             # if lookahead is zero then it is pure online algorithm with no pruning
             if lookahead > 0:
@@ -57,7 +80,8 @@ class DAMP_V2:
                 if (end_of_mass - start_of_mass) > subseq_len:
                     distance_profile = mass_v4.dist_prof(T[start_of_mass:end_of_mass], query)
                     dp_index_less_than_BSF = np.where(distance_profile < best_so_far)[0]  # get the array in tuple
-                    ts_index_less_than_BSF = dp_index_less_than_BSF + start_of_mass
+                    ts_index_less_than_BSF_ = dp_index_less_than_BSF + start_of_mass
+                    ts_index_less_than_BSF = [kk for kk in ts_index_less_than_BSF_ if kk < N]
                     bool_vec[ts_index_less_than_BSF] = False  # prune these indices
         # et1 = datetime.now()
         # print(f"Starting the actual search, so far delta time: {(et1-st1)}")
@@ -72,10 +96,10 @@ class DAMP_V2:
             if not bool_vec[i]:
                 # We subtract a very small number here to avoid the pruned
                 # subsequence having the same discord score as the real discord
-                left_MP[i] -= 0.00001
+                left_MP[i] = left_MP[i-1] - 0.00001
                 continue
             approximate_distance = np.Inf
-            X = next_pow2(8 * subseq_len)
+            X = next_pow2(4 * subseq_len)
             flag = True
             expansion_num = 0
             if i + subseq_len >= N:
@@ -86,7 +110,7 @@ class DAMP_V2:
             while approximate_distance >= best_so_far:
                 # Case 1: Execute the algorithm on the time series segment
                 if expansion_num * subseq_len + i - X < 0:
-                    approximate_distance = min(mass_v4.dist_prof(T[:i], query))
+                    approximate_distance = min(mass_v4.dist_prof(T[:i+1], query))
                     left_MP[i] = approximate_distance
                     if approximate_distance > best_so_far:
                         best_so_far = approximate_distance
@@ -95,10 +119,10 @@ class DAMP_V2:
                     if flag:
                         # Case 2: Execute the algorithm on the time series
                         flag = False
-                        approximate_distance = min(mass_v4.dist_prof(T[i-X:i], query))
+                        approximate_distance = min(mass_v4.dist_prof(T[i-X+1:i+1], query))
                     else:
                         # Case 3: All other cases
-                        X_start = int(i - X + (expansion_num * subseq_len))
+                        X_start = int(i - X + (expansion_num * subseq_len) + 1)
                         X_end = int(i - (X / 2) + (expansion_num * subseq_len) + 1)
                         approximate_distance = min(mass_v4.dist_prof(T[X_start:X_end], query))
                     if approximate_distance < best_so_far:
@@ -115,7 +139,15 @@ class DAMP_V2:
                 if (end_of_mass - start_of_mass) > subseq_len:
                     distance_profile = mass_v4.dist_prof(T[start_of_mass:end_of_mass], query)
                     dp_index_less_than_BSF = np.where(distance_profile < best_so_far)[0]  # get the array in tuple
-                    ts_index_less_than_BSF = dp_index_less_than_BSF + start_of_mass
+                    ts_index_less_than_BSF_ = dp_index_less_than_BSF + start_of_mass
+                    ts_index_less_than_BSF = [kk for kk in ts_index_less_than_BSF_ if kk < N]
+                    # if len(ts_index_less_than_BSF) > 0 and max(ts_index_less_than_BSF) >= N:
+                    #     maxi = max(ts_index_less_than_BSF)
+                    #     print(f"exceed: i={i}; subseq_len={subseq_len}; N={N}; start_of_mass={start_of_mass}; " +
+                    #           f"end_of_mass={end_of_mass}; len(dp)={len(distance_profile)}")
+                    #     print(f"max index: {maxi}; query-len: {len(query)}")
+                    #     print(f"dp_index_less_than_BSF={dp_index_less_than_BSF}")
+                    #     print(f"ts_index_less_than_BSF={ts_index_less_than_BSF}")
                     bool_vec[ts_index_less_than_BSF] = False  # prune these indices
 
         # Get pruning rate
