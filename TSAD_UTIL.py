@@ -32,14 +32,26 @@ def get_clear_indices(idx, replace_indices, word_size, limit=np.Inf):
             e = e[0]
             ll.append((s, e))
     fl = []
-    for i in idx:
-        flag = True
-        for lj in ll:
-            if lj[0] <= i < lj[1]:
-                flag = False
-                break
-        if flag:
-            fl.append(i)
+    if limit == np.Inf:
+        for i in idx:
+            flag = True
+            for lj in ll:
+                if lj[0] <= i < lj[1]:
+                    flag = False
+                    break
+            if flag:
+                fl.append(i)
+    else:
+        for i in idx:
+            if i > limit:
+                continue
+            flag = True
+            for lj in ll:
+                if lj[0] <= i < lj[1]:
+                    flag = False
+                    break
+            if flag:
+                fl.append(i)
     # j = 0
     # n = len(ll) - 1
     # for i in idx:
@@ -49,6 +61,7 @@ def get_clear_indices(idx, replace_indices, word_size, limit=np.Inf):
     #         if i < limit:
     #             fl.append(i)
     return fl
+
 
 def contains_constant_regions(ts, subsequence_len):
     # Assuming T has reset index

@@ -12,8 +12,6 @@ from os import path
 fpath = path.dirname(path.abspath(__file__))
 if fpath not in sys.path:
     sys.path.append(fpath)
-import numpy as np
-import pandas as pd
 import random
 from datetime import datetime
 from importlib import reload
@@ -49,6 +47,19 @@ class HOT_SAX:
 
     def progressive_search(self, start_index=2000, step_size=1000, replace_index=False,
                            print_out=False, deep_print_out=False):
+        """
+        For now replace indices is not allowed. This idea is bad because it prevents other words (at other indices)
+        to compare with the removed indices (discords) and so not allowing full compare.
+        The current implementation of get_clear_indices inside TSAD_UTIL is not efficient when using replace.
+        Till further notice, should not use this feature of replace_index=True
+        :param start_index:
+        :param step_size:
+        :param replace_index:
+        :param print_out:
+        :param deep_print_out:
+        :return:
+        """
+        replace_index = False  # This is under construction, the strategy for removing indices is bad
         n = len(self.ts)
         w = self.wsize
         start_index = min(n - w, start_index)
@@ -67,9 +78,8 @@ class HOT_SAX:
             windows.append(i)
             if replace_index and l not in idx:
                 idx.append(l)
-            # print(f"iteration {i} curr replace idx: {idx}")
             if print_out:
-                print(f"Progressive search completed index {i} out of {end_index - 1}")
+                print(f"Progressive search completed index {i} out of {end_index - 1}, replace: {idx}")
             if i == end_index:
                 break
             i += step_size
@@ -90,6 +100,9 @@ class HOT_SAX:
         j = 0
         # keeping only relevant indices, below the limit and not in given replace list
         idx_ = get_clear_indices(self.idx, replace_indices, self.wsize, limit_index)
+        if print_out:
+            maxi = max(idx_)
+            print(f"max index from get_clear_indices: {maxi}; limit_index: {limit_index}")
         for p in idx_:
             nearest_neighbor_dist = np.Inf
             word = self.sax_array.loc[p, 'word']
