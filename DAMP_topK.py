@@ -99,7 +99,6 @@ class DAMP_topK:
                             discord_start = max(0, imax - half_seqlen)
                             discord_end = max(half_seqlen + 2, imax + half_seqlen + 1)
                             left_MP_copy[discord_start: discord_end] = -np.Inf
-
                     break
                 else:
                     if flag:
