@@ -11,7 +11,7 @@ class Data_Preprocess:
     and each time window will be represented by mean/std-dev (if aggregation type was provided).
     """
 
-    def __init__(self, aggregate_type='', aggregate_amount=1, threshold_hours=12, feature_num=None):
+    def __init__(self, aggregate_type='', aggregate_amount=1, threshold_hours=12, feature_num=None, equip=None):
         """
         Initialize and define the aggregation type and amount.
         :param aggregate_type: 's' = seconds , 'min' = minutes , 'H' = hours , 'D' = days
@@ -21,6 +21,7 @@ class Data_Preprocess:
         self.dfs = []
         self.fname = None
         self.feature_n = feature_num
+        self.equip_n = equip
         self.th_hours = threshold_hours
         self.agg_type = aggregate_type
         self.agg_cnt = aggregate_amount
@@ -46,11 +47,19 @@ class Data_Preprocess:
         if load_all or self.feature_n is None:
             df = pd.read_csv(filename, delimiter=delimiter)
         else:
-            ser = 'Feature' + str(self.feature_n)
-            with open(filename) as f:
-                headers = f.readline() + "\n"
-                text = "\n".join([line for line in f if ser in line])
-                text = headers + text
+            if self.equip_n is None:
+                ser = 'Feature' + str(self.feature_n)
+                with open(filename) as f:
+                    headers = f.readline() + "\n"
+                    text = "\n".join([line for line in f if ser in line])
+                    text = headers + text
+            else:
+                ser = 'Feature' + str(self.feature_n)
+                equ = 'Equip' + str(self.equip_n)
+                with open(filename) as f:
+                    headers = f.readline() + "\n"
+                    text = "\n".join([line for line in f if ser in line and equ in line])
+                    text = headers + text
             df = pd.read_csv(io.StringIO(text),  delimiter=delimiter)
         fns = filename.rsplit("\\", 1)
         if len(fns) == 1:
