@@ -130,11 +130,6 @@ class Data_Preprocess:
                 points = floor(self.th_hours * 3600)  # amount of seconds in threshold window size
             ddf_list = []
             self.recur_split_series_no_multi_clusters(ukey, ddf, ddf_list, ave_size=points, threshold=1.8)
-            print(f"len(ddf_list)={len(ddf_list)}:")
-            k = 0
-            for ddfl in ddf_list:
-                k += 1
-                print(f"iteration {k} with size {len(ddfl)}")
             for ddfl in ddf_list:
                 ddfl = ddfl.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
                 ddfl = ddfl.reset_index(drop=True)
