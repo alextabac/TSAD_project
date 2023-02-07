@@ -123,13 +123,18 @@ class Data_Preprocess:
             ddf = ddf.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
             ddf = ddf.reset_index(drop=True)
             ddf = self.znorm_df(ddf)
-            ddf_list = []
             if self.agg_type != '':
                 # number of points for threshold
                 points = floor(self.agg_type_dict_hours[self.agg_type] * self.th_hours / self.agg_cnt)
             else:  # assuming raw data is per second
                 points = floor(self.th_hours * 3600)  # amount of seconds in threshold window size
+            ddf_list = []
             self.recur_split_series_no_multi_clusters(ukey, ddf, ddf_list, ave_size=points, threshold=1.8)
+            print(f"len(ddf_list)={len(ddf_list)}:")
+            k = 0
+            for ddfl in ddf_list:
+                k += 1
+                print(f"iteration {k} with size {len(ddfl)}")
             for ddfl in ddf_list:
                 ddfl = ddfl.sort_values(by=['series', 'Equip', 'time'], ascending=[True, True, True])
                 ddfl = ddfl.reset_index(drop=True)
@@ -146,7 +151,8 @@ class Data_Preprocess:
             print(f"Found two clusters or more and need split, in dataset {ukey}, indx {indx}, delta {delta}.")
             self.recur_split_series_no_multi_clusters(ukey, df[indx:], ddf_list, ave_size, threshold)
             self.recur_split_series_no_multi_clusters(ukey, df[:indx], ddf_list, ave_size, threshold)
-        ddf_list.append(df)
+        else:
+            ddf_list.append(df)
 
     def get_series_split_max_distance(self, df, ave_size=10):
         delta = 0
